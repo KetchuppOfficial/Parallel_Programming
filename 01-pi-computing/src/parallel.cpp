@@ -78,12 +78,11 @@ int main(int argc, char *argv[])
 
     auto finish = std::chrono::high_resolution_clock::now();
 
-    using ms = std::chrono::milliseconds;
-    auto exec_time = std::chrono::duration_cast<ms>(finish - start).count();
-
     constexpr auto precision = std::numeric_limits<cpp_dec_float_50>::max_digits10;
     std::cout << std::setprecision(precision) << parallel::ratio_to_float(pi_part) << std::endl;
 
+    using ms = std::chrono::milliseconds;
+    auto exec_time = std::chrono::duration_cast<ms>(finish - start).count();
     std::cout << "Parallel computing on " << size << " nodes took: " << exec_time << "ms"
               << std::endl;
 

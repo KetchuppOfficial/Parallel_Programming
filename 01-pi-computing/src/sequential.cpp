@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
     std::cout << std::setprecision(max_precision) << pi << std::endl;
 
     using ms = std::chrono::milliseconds;
-    std::cout << "Computation time: " << std::chrono::duration_cast<ms>(finish - start).count()
-              << " ms" << std::endl;
+    auto exec_time = std::chrono::duration_cast<ms>(finish - start).count();
+    std::cout << "Sequential computing took: " << exec_time << " ms" << std::endl;
 
     return 0;
 }
