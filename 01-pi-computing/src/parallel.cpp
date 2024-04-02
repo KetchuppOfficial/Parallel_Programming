@@ -8,7 +8,7 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
-#include "pi-computation.hpp"
+#include "pi_computation.hpp"
 #include "program_options.hpp"
 
 using boost::multiprecision::cpp_rational;

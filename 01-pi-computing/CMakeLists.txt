@@ -19,7 +19,7 @@ set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(sequential-pi
                ${SRC_DIR}/sequential.cpp
-               ${SRC_DIR}/pi-computation.cpp
+               ${SRC_DIR}/pi_computation.cpp
                ${SRC_DIR}/program_options.cpp)
 
 target_link_libraries(sequential-pi
@@ -31,7 +31,7 @@ target_include_directories(sequential-pi
 
 add_executable(parallel-pi
                ${SRC_DIR}/parallel.cpp
-               ${SRC_DIR}/pi-computation.cpp
+               ${SRC_DIR}/pi_computation.cpp
                ${SRC_DIR}/program_options.cpp)
 
 target_link_libraries(parallel-pi

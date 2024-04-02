@@ -4,7 +4,7 @@
 #include <limits>
 #include <chrono>
 
-#include "pi-computation.hpp"
+#include "pi_computation.hpp"
 #include "program_options.hpp"
 
 int main(int argc, char *argv[])

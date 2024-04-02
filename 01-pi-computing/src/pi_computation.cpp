@@ -1,4 +1,4 @@
-#include "pi-computation.hpp"
+#include "pi_computation.hpp"
 
 namespace parallel
 {
