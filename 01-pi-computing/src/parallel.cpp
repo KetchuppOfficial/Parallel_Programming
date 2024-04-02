@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::size_t per_process = 1000;
+    std::size_t per_process;
     if (vm.count("n-iterations"))
         per_process = vm["n-iterations"].as<std::size_t>();
     else
