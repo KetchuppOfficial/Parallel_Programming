@@ -11,6 +11,7 @@ namespace parallel
 
 boost::multiprecision::cpp_dec_float_50 compute_pi(std::size_t n_iterations);
 boost::multiprecision::cpp_rational compute_part_of_pi_series(std::size_t from, std::size_t to);
+boost::multiprecision::cpp_dec_float_50 ratio_to_float(boost::multiprecision::cpp_rational r);
 
 } // namespace parallel
 

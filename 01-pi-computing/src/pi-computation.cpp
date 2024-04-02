@@ -27,14 +27,17 @@ cpp_rational compute_part_of_pi_series(std::size_t from, std::size_t to)
     return pi;
 }
 
-cpp_dec_float_50 compute_pi(std::size_t n_iterations)
+cpp_dec_float_50 ratio_to_float(cpp_rational r)
 {
-    cpp_rational pi_ratio = compute_part_of_pi_series(0, n_iterations);
-
-    cpp_dec_float_50 num{boost::multiprecision::numerator(pi_ratio)};
-    cpp_dec_float_50 denom{boost::multiprecision::denominator(pi_ratio)};
+    cpp_dec_float_50 num{boost::multiprecision::numerator(r)};
+    cpp_dec_float_50 denom{boost::multiprecision::denominator(r)};
 
     return num / denom;
+}
+
+cpp_dec_float_50 compute_pi(std::size_t n_iterations)
+{
+    return ratio_to_float(compute_part_of_pi_series(0, n_iterations));
 }
 
 } // namespace parallel
