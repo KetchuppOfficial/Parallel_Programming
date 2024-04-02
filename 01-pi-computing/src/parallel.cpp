@@ -21,27 +21,31 @@ int main(int argc, char *argv[])
 
     auto [desc, vm] = parallel::set_program_options(argc, argv);
 
-    if (vm.count("help"))
-    {
-        std::cout << desc << std::endl;
-        return 0;
-    }
-
-    std::size_t n_iterations;
-    if (vm.count("n-iterations"))
-        n_iterations = vm["n-iterations"].as<std::size_t>();
-    else
-    {
-        std::cout << "The number of iterations not set. Abort" << std::endl;
-        return 1;
-    }
-
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
     int rank = world.rank();
-    int size = world.size();
+
+    if (vm.count("help"))
+    {
+        if (rank == 0)
+            std::cout << desc << std::endl;
+
+        return 0;
+    }
+
     std::size_t per_process = 1000;
+    if (vm.count("n-iterations"))
+        per_process = vm["n-iterations"].as<std::size_t>();
+    else
+    {
+        if (rank == 0)
+            std::cout << "The number of iterations not set. Abort" << std::endl;
+
+        return 0;
+    }
+
+    int size = world.size();
 
     auto start = std::chrono::high_resolution_clock::now();
 
