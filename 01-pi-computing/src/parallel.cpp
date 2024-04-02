@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -45,27 +46,34 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    int size = world.size();
-
     auto start = std::chrono::high_resolution_clock::now();
 
     cpp_rational pi_part
         = parallel::compute_part_of_pi_series(rank * per_process, (rank + 1) * per_process);
 
-    for (int denom = 2; denom <= size; denom *= 2)
+    constexpr int tag = 0;
+
+    int size = world.size();
+    unsigned current_size = size;
+    unsigned current_rank = rank;
+    for (int shift = 1; current_size > 1; shift *= 2)
     {
-        if (rank % denom)
+        if (current_rank % 2)
         {
-            world.send(rank - denom / 2, 0, pi_part);
+            world.send(rank - shift, tag, pi_part);
             return 0;
         }
-        else
+        else if (current_rank < current_size - 1)
         {
             cpp_rational another_pi_part;
-            world.recv(rank + denom / 2, 0, another_pi_part);
+            world.recv(rank + shift, tag, another_pi_part);
 
             pi_part += another_pi_part;
         }
+
+        std::div_t res = std::div(current_size, 2);
+        current_size = res.rem ? 1 + res.quot : res.quot;
+        current_rank /= 2;
     }
 
     auto finish = std::chrono::high_resolution_clock::now();
