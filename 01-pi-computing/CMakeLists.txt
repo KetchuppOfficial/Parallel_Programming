@@ -8,19 +8,36 @@ if (${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
 endif()
 
 find_package(Boost REQUIRED
-             COMPONENTS PROGRAM_OPTIONS HEADERS)
+             COMPONENTS MPI PROGRAM_OPTIONS HEADERS)
 
 set(CMAKE_CXX_STANDARD          20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS        OFF)
 
-aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC_LIST)
+set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
-add_executable(pi ${SRC_LIST})
+add_executable(sequential-pi
+               ${SRC_DIR}/sequential.cpp
+               ${SRC_DIR}/pi-computation.cpp
+               ${SRC_DIR}/program_options.cpp)
 
-target_link_libraries(pi
+target_link_libraries(sequential-pi
                       Boost::program_options
                       Boost::headers)
 
-target_include_directories(pi
-                           PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(sequential-pi
+                           PRIVATE ${INCLUDE_DIR})
+
+add_executable(parallel-pi
+               ${SRC_DIR}/parallel.cpp
+               ${SRC_DIR}/pi-computation.cpp
+               ${SRC_DIR}/program_options.cpp)
+
+target_link_libraries(parallel-pi
+                      Boost::mpi
+                      Boost::headers
+                      Boost::program_options)
+
+target_include_directories(parallel-pi
+                           PRIVATE ${INCLUDE_DIR})
