@@ -48,8 +48,10 @@ int main(int argc, char *argv[])
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    cpp_rational pi_part
-        = parallel::compute_part_of_pi_series(rank * per_process, (rank + 1) * per_process);
+    std::size_t from = rank * per_process;
+    std::size_t to = from + per_process;
+
+    cpp_rational pi_part = parallel::compute_part_of_pi_series(from, to);
 
     constexpr int tag = 0;
 
