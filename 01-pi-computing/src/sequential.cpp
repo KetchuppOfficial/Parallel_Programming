@@ -4,23 +4,12 @@
 #include <limits>
 #include <chrono>
 
-#include <boost/program_options.hpp>
-
 #include "pi-computation.hpp"
-
-namespace po = boost::program_options;
+#include "program_options.hpp"
 
 int main(int argc, char *argv[])
 {
-    po::options_description desc{"Allowed options"};
-
-    desc.add_options()
-        ("help", "produce help message")
-        ("n-iterations", po::value<std::size_t>(), "set the number of iterations");
-
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+    auto [desc, vm] = parallel::set_program_options(argc, argv);
 
     if (vm.count("help"))
     {
