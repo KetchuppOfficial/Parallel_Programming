@@ -54,3 +54,17 @@ If --target option is omitted, both targets will be built.
     ```
 
     The number of iterations is considered per node.
+
+### 3) How to run tests
+
+If you want to compare results of computing pi by both programs, there is a convenient script
+[run.sh](/01-pi-computing/test/run.sh) provided.
+
+Command:
+
+```bash
+test/run.sh
+```
+
+runs both sequential and parallel programs to compute an approximation of pi. The script compares
+the results of computation and prints time took to execute the programs.
