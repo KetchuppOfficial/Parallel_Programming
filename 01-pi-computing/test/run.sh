@@ -52,7 +52,9 @@ function compare_results()
     fi
 }
 
+source $SCRIPT_DIR/opts.sh
+
 clean_up
 build
-run 4 1000
+run $N_PROC $PER_PROC
 compare_results
