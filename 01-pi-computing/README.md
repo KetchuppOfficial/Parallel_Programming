@@ -63,7 +63,7 @@ If you want to compare results of computing pi by both programs, there is a conv
 Command:
 
 ```bash
-test/run.sh
+test/run.sh -c <number-of-processes-to-run> -n <iterations-per-process>
 ```
 
 runs both sequential and parallel programs to compute an approximation of pi. The script compares
