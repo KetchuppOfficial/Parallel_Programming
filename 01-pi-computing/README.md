@@ -1,5 +1,9 @@
 # Computation of pi number: parallel and not so parallel
 
+## Formula used to compute pi
+
+$$\pi = \sum_{k = 0}^{\infty} \left[\frac{1}{16^k}\left(\frac{4}{8k + 1} - \frac{2}{8k + 4} - \frac{1}{8k + 5} - \frac{1}{8k + 6}\right)\right]$$
+
 ## How to build
 
 ### 0) Make sure you are in the root directory of the project (i.e. Parallel_Programming/01-pi-computing/)
