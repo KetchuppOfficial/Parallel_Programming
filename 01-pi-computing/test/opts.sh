@@ -1,8 +1,5 @@
 #!/bin/bash
 
-C_ERROR="-c should be followed by a nonnegative number"
-N_ERROR="-n should be followed by a nonnegative number"
-
 function usage()
 {
     local message=$1
