@@ -17,9 +17,9 @@ public:
     std::size_t t_size() const noexcept { return N_t_; }
     std::size_t x_size() const noexcept { return N_x_; }
 
-    double operator[](std::size_t k, std::size_t m) const { return grid_.data()[k * N_x_ + m]; }
+    double operator[](std::size_t k, std::size_t m) const { return grid_[k * N_x_ + m]; }
 
-    double &operator[](std::size_t k, std::size_t m) { return grid_.data()[k * N_x_ + m]; }
+    double &operator[](std::size_t k, std::size_t m) { return grid_[k * N_x_ + m]; }
 
 private:
 
