@@ -82,10 +82,7 @@ protected:
      *      |
      *      +
      */
-    void cross(std::size_t k, std::size_t m)
-    {
-        cross(k, m, grid_[k, m - 1], grid_[k, m + 1]);
-    }
+    void cross(std::size_t k, std::size_t m) { cross(k, m, grid_[k, m - 1], grid_[k, m + 1]); }
 
     void cross(std::size_t k, std::size_t m, double left, double right)
     {
