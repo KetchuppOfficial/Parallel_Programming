@@ -18,7 +18,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/../matplotplusplus
                  ${PROJECT_SOURCE_DIR}/../matplotplusplus/build)
 
 add_executable(sequential
-               ${SRC_DIR}/main.cpp)
+               ${SRC_DIR}/sequential.cpp)
 
 target_link_libraries(sequential
                       PUBLIC matplot m)
