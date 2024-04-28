@@ -48,7 +48,7 @@ public:
         solve(a);
     }
 
-    double operator[](std::size_t k, std::size_t m) const { return grid_[k, m]; }
+    const double &operator[](std::size_t k, std::size_t m) const { return grid_[k, m]; }
 
     std::size_t x_size() const noexcept { return grid_.x_size(); }
     std::size_t t_size() const noexcept { return grid_.t_size(); }
