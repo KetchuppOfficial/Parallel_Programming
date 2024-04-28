@@ -43,7 +43,7 @@ int main()
         1.0 /* X */, 100 /* N_x */,
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
-        [](double t){ return std::exp(-t);}
+        [](double t){ return std::exp(-t); }
     };
 
     plot_solution(solution, "x + t");
