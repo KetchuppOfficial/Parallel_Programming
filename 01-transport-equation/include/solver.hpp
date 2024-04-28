@@ -26,7 +26,7 @@ public:
     Transport_Equation_Solver(double a, double T, std::size_t N_t, double X, std::size_t N_x,
                               two_arg_func heterogeneity,
                               one_arg_func init_cond, one_arg_func boundary_cond)
-        : grid_{N_t + 1, N_x + 1}, tau_{T / N_t}, h_{X / N_x}, f_{heterogeneity}
+        : grid_{N_t + 1, N_x + 1}, a_{a}, tau_{T / N_t}, h_{X / N_x}, f_{heterogeneity}
     {
         if (T < 0)
             throw std::invalid_argument{"Value of parameter T must be positive"};
@@ -50,8 +50,13 @@ public:
 
     double operator[](std::size_t k, std::size_t m) const { return grid_[k, m]; }
 
-    std::size_t x_size() const { return grid_.x_size(); }
-    std::size_t t_size() const { return grid_.t_size(); }
+    std::size_t x_size() const noexcept { return grid_.x_size(); }
+    std::size_t t_size() const noexcept { return grid_.t_size(); }
+
+    double t_step() const noexcept { return tau_; }
+    double x_step() const noexcept { return h_; }
+
+    double parameter() const noexcept { return a_; }
 
 private:
 
@@ -113,6 +118,7 @@ private:
     }
 
     Grid grid_;
+    const double a_;
     const double tau_;
     const double h_;
     two_arg_func f_;
