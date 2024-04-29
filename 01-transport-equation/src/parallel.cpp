@@ -10,10 +10,10 @@
 #include "parallel_solver.hpp"
 #include "solution_visualization.hpp"
 
-namespace po = boost::program_options;
-
 int main(int argc, char *argv[])
 {
+    namespace po = boost::program_options;
+
     #ifndef BOOST_MPI_HAS_NOARG_INITIALIZATION
     static_assert(false, "Program requires command line arguments for boost::program_options");
     #endif
