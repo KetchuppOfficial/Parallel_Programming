@@ -155,7 +155,7 @@ private:
     void reduce(const boost::mpi::communicator &world)
     {
         constexpr int tag = 0;
-        int rank = world.rank();
+        const int rank = world.rank();
         unsigned current_size = world.size();
         unsigned current_rank = rank;
 
@@ -171,11 +171,11 @@ private:
                 std::vector<double> another_grid;
                 world.recv(rank + shift, tag, another_grid);
 
-                std::size_t t_size = grid_.t_size();
-                std::size_t lhs_x_size = grid_.x_size();
-                std::size_t rhs_x_size = another_grid.size() / t_size;
+                const std::size_t t_size = grid_.t_size();
+                const std::size_t lhs_x_size = grid_.x_size();
+                const std::size_t rhs_x_size = another_grid.size() / t_size;
 
-                Grid output{grid_.t_size(), lhs_x_size + rhs_x_size};
+                Grid output{t_size, lhs_x_size + rhs_x_size};
 
                 for (auto k = 0uz; k != t_size; ++k)
                 {
@@ -188,7 +188,7 @@ private:
                 grid_ = std::move(output);
             }
 
-            std::div_t res = std::div(current_size, 2);
+            const std::div_t res = std::div(current_size, 2);
             current_size = res.rem ? 1 + res.quot : res.quot;
             current_rank /= 2;
         }
