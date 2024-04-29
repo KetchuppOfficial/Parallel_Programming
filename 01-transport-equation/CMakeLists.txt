@@ -24,7 +24,7 @@ add_executable(sequential
                ${SRC_DIR}/sequential.cpp ${SRC_DIR}/solution_visualization.cpp)
 
 target_link_libraries(sequential
-                      PRIVATE matplot m)
+                      PRIVATE Boost::program_options matplot m)
 
 target_include_directories(sequential
                            PRIVATE ${INCLUDE_DIR})

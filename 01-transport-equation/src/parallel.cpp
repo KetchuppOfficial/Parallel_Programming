@@ -22,10 +22,9 @@ int main(int argc, char *argv[])
 
     desc.add_options()
         ("help", "Produce help message")
-        ("multiplier", po::value<std::size_t>(), "The number of processes times multiplier equals "
-                                                 "the number of segments on X axis of the grid. "
-                                                 "The number of segment on T axis of the grid is 2 "
-                                                 "times greater")
+        ("x-dots-per-process", po::value<std::size_t>(),
+         "Set the number of points on X axis of the grid of each process. "
+         "The number of points on T axis of the grid is (2 * n_proc) times greater")
         ("plot", "Plot solution");
 
     po::variables_map vm;
@@ -43,9 +42,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::size_t multiplier;
-    if (vm.count("multiplier"))
-        multiplier = vm["multiplier"].as<std::size_t>();
+    std::size_t N_x;
+    if (vm.count("x-dots-per-process"))
+        N_x = world.size() * vm["x-dots-per-process"].as<std::size_t>();
     else
     {
         if (world.rank() == 0)
@@ -54,14 +53,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::size_t N_x = world.size() * multiplier;
-
     auto start = std::chrono::high_resolution_clock::now();
 
     parallel::Transport_Equation_PSolver solution
     {
         world, 2.0 /* a */,
-        0.0 /* t_1 */, 1.0 /* T */, N_x * 2 /* N_t */,
+        0.0 /* t_1 */, 1.0 /* T */, N_x * 2 - 1 /* N_t */,
         0.0 /* x_1 */, 1.0 /* X */, N_x - 1 /* N_x */,
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
