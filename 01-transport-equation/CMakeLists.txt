@@ -8,7 +8,7 @@ if (${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
 endif()
 
 find_package(Boost REQUIRED
-             COMPONENTS MPI)
+             COMPONENTS MPI PROGRAM_OPTIONS)
 
 set(CMAKE_CXX_STANDARD          23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,7 +33,7 @@ add_executable(parallel
                ${SRC_DIR}/parallel.cpp ${SRC_DIR}/solution_visualization.cpp)
 
 target_link_libraries(parallel
-                      PRIVATE Boost::mpi matplot m)
+                      PRIVATE Boost::mpi Boost::program_options matplot m )
 
 target_include_directories(parallel
                            PRIVATE ${INCLUDE_DIR})
