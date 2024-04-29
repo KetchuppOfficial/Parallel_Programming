@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
                                                  "the number of segments on X axis of the grid. "
                                                  "The number of segment on T axis of the grid is 2 "
                                                  "times greater")
-        ("plot", "plot solution");
+        ("plot", "Plot solution");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
