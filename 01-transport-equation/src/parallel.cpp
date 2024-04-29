@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
     if (world.rank() == 0)
     {
         using mcs = std::chrono::microseconds;
-        std::cout << "Parallel solving on " << world.size() << " nodes took: "
+        std::cout << "Parallel solving on " << world.size()
+                  << ((world.size() > 1) ? " nodes" : " node") << " took: "
                   << std::chrono::duration_cast<mcs>(stop - start).count() << " mcs" << std::endl;
 
         if (vm.count("plot"))
