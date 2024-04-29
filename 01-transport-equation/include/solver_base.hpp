@@ -27,7 +27,17 @@ public:
     Transport_Equation_Solver_Base(double a,
                                    std::size_t N_t, double t_step, std::size_t N_x, double x_step,
                                    two_arg_func heterogeneity)
-        : grid_{N_t + 1, N_x + 1}, a_{a}, tau_{t_step}, h_{x_step}, f_{heterogeneity} {}
+        : grid_{N_t + 1, N_x + 1}, a_{a}, tau_{t_step}, h_{x_step}, f_{heterogeneity}
+    {
+        if (t_step < 0)
+            throw std::invalid_argument{"Left time boundary must be less then right boundary"};
+        else if (x_step < 0)
+            throw std::invalid_argument{"Left space boundary must be less then right boundary"};
+        else if (N_t < 2)
+            throw std::invalid_argument{"The number of segments on the T axis must be at least 2"};
+        else if (N_x < 2)
+            throw std::invalid_argument{"The number of segments on the X axis must be at least 2"};
+    }
 
     const double &operator[](std::size_t k, std::size_t m) const { return grid_[k, m]; }
 
@@ -42,6 +52,22 @@ public:
 protected:
 
     ~Transport_Equation_Solver_Base() = default;
+
+    void solve_sequential()
+    {
+        for (auto m = 1; m != grid_.x_size() - 1; ++m)
+            explicit_four_points(0, m);
+
+        explicit_left_corner(0, grid_.x_size() - 1);
+
+        for (auto k = 1; k != grid_.t_size() - 1; ++k)
+        {
+            for (auto m = 1; m != grid_.x_size() - 1; ++m)
+                cross(k, m);
+
+            explicit_left_corner(k, grid_.x_size() - 1);
+        }
+    }
 
     /*
      * to use on the right border

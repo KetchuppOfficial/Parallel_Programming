@@ -25,15 +25,7 @@ public:
                                          N_t, (t_2 - t_1) / N_t, N_x, (x_2 - x_1) / N_x,
                                          heterogeneity}
     {
-        if (t_2 < t_1)
-            throw std::invalid_argument{"Left time boundary must be less then right boundary"};
-        else if (x_2 < x_1)
-            throw std::invalid_argument{"Left space boundary must be less then right boundary"};
-        else if (N_t < 2)
-            throw std::invalid_argument{"The number of segments of the T axis must be at least 2"};
-        else if (N_x < 2)
-            throw std::invalid_argument{"The number of segments on the X axis must be at least 2"};
-        else if (init_cond(x_1) != boundary_cond(t_1))
+        if (init_cond(x_1) != boundary_cond(t_1))
             throw std::invalid_argument{"Initial and boundary condition are not coordinated"};
 
         for (auto i = 0; i != grid_.x_size(); ++i)
@@ -42,25 +34,7 @@ public:
         for (auto i = 1; i != grid_.t_size(); ++i)
             grid_[i, 0] = boundary_cond(t_1 + i * tau_);
 
-        solve();
-    }
-
-private:
-
-    void solve()
-    {
-        for (auto m = 1; m != grid_.x_size() - 1; ++m)
-            explicit_four_points(0, m);
-
-        explicit_left_corner(0, grid_.x_size() - 1);
-
-        for (auto k = 1; k != grid_.t_size() - 1; ++k)
-        {
-            for (auto m = 1; m != grid_.x_size() - 1; ++m)
-                cross(k, m);
-
-            explicit_left_corner(k, grid_.x_size() - 1);
-        }
+        solve_sequential();
     }
 };
 

@@ -29,22 +29,38 @@ public:
                                          (N_x + 1) / world.size() - 1, (x_2 - x_1) / N_x,
                                          heterogeneity}
     {
-        for (auto start_i = grid_.x_size() * world.rank(), i = 0uz; i != grid_.x_size(); ++i)
-            grid_[0, i] = init_cond((start_i + i) * h_);
+        if (init_cond(x_1) != boundary_cond(t_1))
+            throw std::invalid_argument{"Initial and boundary condition are not coordinated"};
 
-        if (const int rank = world.rank(); rank == 0)
+        if (world.size() == 1)
         {
+            for (auto i = 0uz; i != grid_.x_size(); ++i)
+                grid_[0, i] = init_cond(x_1 + i * h_);
+
             for (auto i = 1uz; i != grid_.t_size(); ++i)
                 grid_[i, 0] = boundary_cond(t_1 + i * tau_);
 
-            solve_left_border(world);
+            solve_sequential();
         }
-        else if (rank == world.size() - 1)
-            solve_right_border(world);
         else
-            solve_middle(world);
+        {
+            for (auto start_i = grid_.x_size() * world.rank(), i = 0uz; i != grid_.x_size(); ++i)
+                grid_[0, i] = init_cond((start_i + i) * h_);
 
-        reduce(world);
+            if (const int rank = world.rank(); rank == 0)
+            {
+                for (auto i = 1uz; i != grid_.t_size(); ++i)
+                    grid_[i, 0] = boundary_cond(t_1 + i * tau_);
+
+                solve_left_border(world);
+            }
+            else if (rank == world.size() - 1)
+                solve_right_border(world);
+            else
+                solve_middle(world);
+
+            reduce(world);
+        }
     }
 
 private:
