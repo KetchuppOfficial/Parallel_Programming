@@ -3,7 +3,9 @@
 ## Equation
 
 $$ \frac{\partial u}{\partial t} + 2\frac{\partial u}{\partial t} = x + t;\ x \in (0; X),\ t \in (0; T)$$
+
 $$u|_{t = 0} = \cos{(\pi x)};\ x \in [0; X]$$
+
 $$u|_{x = 0} = e^{-t};\ t \in [0; T]$$
 
 ## How to build
@@ -23,7 +25,7 @@ If --target option is omitted, both targets will be built.
 
 > [!NOTE]
 > Your compiler must support some features of C++23 such as multidimensional subscript operator and
-literal suffix for size_t
+literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
 
 ### 2) How to run
 
