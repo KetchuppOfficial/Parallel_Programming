@@ -17,27 +17,27 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
-add_executable(sequential-pi
+add_executable(sequential
                ${SRC_DIR}/sequential.cpp
                ${SRC_DIR}/pi_computation.cpp
                ${SRC_DIR}/program_options.cpp)
 
-target_link_libraries(sequential-pi
+target_link_libraries(sequential
                       Boost::program_options
                       Boost::headers)
 
-target_include_directories(sequential-pi
+target_include_directories(sequential
                            PRIVATE ${INCLUDE_DIR})
 
-add_executable(parallel-pi
+add_executable(parallel
                ${SRC_DIR}/parallel.cpp
                ${SRC_DIR}/pi_computation.cpp
                ${SRC_DIR}/program_options.cpp)
 
-target_link_libraries(parallel-pi
+target_link_libraries(parallel
                       Boost::mpi
                       Boost::headers
                       Boost::program_options)
 
-target_include_directories(parallel-pi
+target_include_directories(parallel
                            PRIVATE ${INCLUDE_DIR})
