@@ -15,7 +15,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build [--target <tgt>]
 ```
 
-**tgt** can be **sequential-pi** or **parallel-pi**.
+**tgt** can be **sequential** or **parallel**.
 
 If --target option is omitted, both targets will be built.
 
