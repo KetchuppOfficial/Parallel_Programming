@@ -14,6 +14,10 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
+> [!NOTE]
+> Your compiler must support a feature of C++23: literal suffix for size_t
+(i.e. g++-11 and clang++-13 or newer)
+
 ### 2) How to run
 
 ```bash
