@@ -14,9 +14,8 @@ int main(int argc, char *argv[])
 {
     namespace po = boost::program_options;
 
-    #ifndef BOOST_MPI_HAS_NOARG_INITIALIZATION
-    static_assert(false, "Program requires command line arguments for boost::program_options");
-    #endif
+    boost::mpi::environment env{argc, argv};
+    boost::mpi::communicator world;
 
     po::options_description desc{"Allowed options"};
 
@@ -30,9 +29,6 @@ int main(int argc, char *argv[])
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
-
-    boost::mpi::environment env;
-    boost::mpi::communicator world;
 
     if (vm.count("help"))
     {

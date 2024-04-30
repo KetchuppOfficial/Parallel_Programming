@@ -16,14 +16,10 @@ using boost::multiprecision::cpp_dec_float_50;
 
 int main(int argc, char *argv[])
 {
-    #ifndef BOOST_MPI_HAS_NOARG_INITIALIZATION
-    static_assert(false, "Program requires command line arguments for boost::program_options");
-    #endif
+    boost::mpi::environment env{argc, argv};
+    boost::mpi::communicator world;
 
     auto [desc, vm] = parallel::set_program_options(argc, argv);
-
-    boost::mpi::environment env;
-    boost::mpi::communicator world;
 
     int rank = world.rank();
 
