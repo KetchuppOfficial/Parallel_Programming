@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world;
 
-    auto [desc, vm] = parallel::set_program_options(argc, argv);
+    auto [desc, vm] = parallel::set_program_options(argc, argv,
+                                                    "Set the number of iterations per process");
 
     int rank = world.rank();
 

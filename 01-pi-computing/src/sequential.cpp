@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    auto [desc, vm] = parallel::set_program_options(argc, argv);
+    auto [desc, vm] = parallel::set_program_options(argc, argv, "Set the number of iterations");
 
     if (vm.count("help"))
     {

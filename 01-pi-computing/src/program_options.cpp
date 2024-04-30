@@ -5,13 +5,14 @@
 namespace parallel
 {
 
-std::pair<po::options_description, po::variables_map> set_program_options(int argc, char *argv[])
+auto set_program_options(int argc, char *argv[], std::string_view n_iter_desc)
+    -> std::pair<po::options_description, po::variables_map>
 {
     po::options_description desc{"Allowed options"};
 
     desc.add_options()
-        ("help", "produce help message")
-        ("n-iterations", po::value<std::size_t>(), "set the number of iterations");
+        ("help", "Produce help message")
+        ("n-iterations", po::value<std::size_t>(), n_iter_desc.data());
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
