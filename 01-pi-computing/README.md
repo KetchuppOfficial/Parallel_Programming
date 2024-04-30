@@ -24,25 +24,25 @@ If --target option is omitted, both targets will be built.
 - Sequential program:
 
     ```bash
-    build/sequential-pi --help
+    build/sequential --help
     # Allowed options:
-    #   --help                produce help message
-    #   --n-iterations arg    set the number of iterations
+    #   --help                Produce help message
+    #   --n-iterations arg    Set the number of iterations
     ```
 
     Example of usage:
 
     ```bash
-    build/sequential-pi --n-iterations 6000
+    build/sequential --n-iterations 6000
     ```
 
 - Parallel program:
 
     ```bash
-    mpirun -c N build/parallel-pi --help
+    mpirun -c N build/parallel --help
     # Allowed options:
-    #   --help                produce help message
-    #   --n-iterations arg    set the number of iterations
+    #   --help                Produce help message
+    #   --n-iterations arg    Set the number of iterations per process
     ```
 
     **N** - the number of nodes.
@@ -50,10 +50,8 @@ If --target option is omitted, both targets will be built.
     Example of usage:
 
     ```bash
-    mpirun -c 6 build/parallel-pi --n-iterations 1000
+    mpirun -c 6 build/parallel --n-iterations 1000
     ```
-
-    The number of iterations is considered per node.
 
 ### 3) How to run tests
 
