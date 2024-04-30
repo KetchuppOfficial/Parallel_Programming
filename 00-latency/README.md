@@ -17,11 +17,13 @@ cmake --build build
 ### 2) How to run
 
 ```bash
-mpirun -c 6 ./build/measure_latency --help
+mpirun -c N ./build/measure_latency --help
 # Allowed options:
 #     --help                Produce help message
 #     --n-messages arg      Set the number of messages to send from node 0 to node 1
 ```
+
+**N** - the number of nodes.
 
 Example of usage:
 

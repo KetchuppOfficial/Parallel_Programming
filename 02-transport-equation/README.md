@@ -32,7 +32,7 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
 - Sequential program:
 
     ```bash
-    build/sequential --help
+    ./build/sequential --help
     # Allowed options:
     #     --help                Produce help message
     #     --x-dots arg          Set the number of points onX axis of the grid. The
@@ -44,13 +44,13 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     Example of usage:
 
     ```bash
-    build/sequential --x-dots 100 --plot
+    ./build/sequential --x-dots 100 --plot
     ```
 
 - Parallel program:
 
     ```bash
-    mpirun -c 6 ./build/parallel --help
+    mpirun -c N ./build/parallel --help
     # Allowed options:
     #     --help                   Produce help message
     #     --x-dots-per-process arg Set the number of points on X axis of the grid of
@@ -58,6 +58,8 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     #                              grid is (2 * n_proc) times greater
     #     --plot                   Plot solution
     ```
+
+    **N** - the number of nodes.
 
     Example of usage:
 
