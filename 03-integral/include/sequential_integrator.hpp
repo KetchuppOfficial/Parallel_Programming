@@ -1,5 +1,5 @@
-#ifndef INCLUDE_NUMERICAL_INTEGRATOR
-#define INCLUDE_NUMERICAL_INTEGRATOR
+#ifndef INCLUDE_SEQUENTIAL_INTEGRATOR
+#define INCLUDE_SEQUENTIAL_INTEGRATOR
 
 #include <functional>
 #include <cassert>
@@ -12,13 +12,13 @@
 namespace parallel
 {
 
-class Numerical_Integrator final
+class Sequential_Integrator final
 {
 public:
 
     struct recursive {};
 
-    Numerical_Integrator(std::function<double(double)> f, double epsilon)
+    Sequential_Integrator(std::function<double(double)> f, double epsilon)
         : f_{f}, epsilon_{epsilon} {}
 
     double integrate(double a, double b) const
@@ -113,4 +113,4 @@ private:
 
 } // namespace parallel
 
-#endif // INCLUDE_NUMERICAL_INTEGRATOR
+#endif // INCLUDE_SEQUENTIAL_INTEGRATOR

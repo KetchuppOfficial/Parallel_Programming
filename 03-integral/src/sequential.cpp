@@ -2,13 +2,13 @@
 #include <cmath>
 #include <chrono>
 
-#include "numerical_integrator.hpp"
+#include "sequential_integrator.hpp"
 
 int main()
 {
-    parallel::Numerical_Integrator integrator{[](double x){ return std::sin(1 / x); }, 1e-8};
+    parallel::Sequential_Integrator integrator{[](double x){ return std::sin(1 / x); }, 1e-8};
 
-    constexpr double a = 0.001, b = 0.1;
+    constexpr double a = 0.0001, b = 0.1;
 
     auto start = std::chrono::high_resolution_clock::now();
     double I = integrator.integrate(a, b);
@@ -21,7 +21,7 @@ int main()
               << "    I = " << I << std::endl;
 
     start = std::chrono::high_resolution_clock::now();
-    I = integrator.integrate(a, b, parallel::Numerical_Integrator::recursive{});
+    I = integrator.integrate(a, b, parallel::Sequential_Integrator::recursive{});
     finish = std::chrono::high_resolution_clock::now();
 
     std::cout << "Recursive computation took "
