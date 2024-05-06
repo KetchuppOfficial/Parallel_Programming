@@ -1,5 +1,5 @@
-#ifndef INCLUDE_SEQUENTIAL_INTEGRATOR
-#define INCLUDE_SEQUENTIAL_INTEGRATOR
+#ifndef INCLUDE_SEQUENTIAL_INTEGRATOR_HPP
+#define INCLUDE_SEQUENTIAL_INTEGRATOR_HPP
 
 #include <functional>
 #include <cassert>
@@ -113,4 +113,4 @@ private:
 
 } // namespace parallel
 
-#endif // INCLUDE_SEQUENTIAL_INTEGRATOR
+#endif // INCLUDE_SEQUENTIAL_INTEGRATOR_HPP
