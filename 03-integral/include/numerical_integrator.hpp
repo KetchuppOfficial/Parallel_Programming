@@ -62,7 +62,7 @@ private:
             double I_cb = std::midpoint(f_c, f_b) * (b - c);
             double I_acb = I_ac + I_cb;
 
-            if (std::abs(I_ab - I_acb) > epsilon_ * std::abs(I_acb))
+            if (not_good_approximation_yet(I_ab, I_acb))
             {
                 stack.emplace(a, c, f_a, f_c, I_ac);
                 a = c;
@@ -96,10 +96,15 @@ private:
         double I_cb = std::midpoint(f_c, f_b) * (b - c);
         double I_acb = I_ac + I_cb;
 
-        if (std::abs(I_ab - I_acb) > epsilon_ * std::abs(I_acb))
+        if (not_good_approximation_yet(I_ab, I_acb))
             return integrate_recursive(a, f_a, c, f_c) + integrate_recursive(c, f_c, b, f_b);
         else
             return I_acb;
+    }
+
+    bool not_good_approximation_yet(double I_ab, double I_acb) const
+    {
+        return std::abs(I_ab - I_acb) > epsilon_ * std::abs(I_acb);
     }
 
     std::function<double(double)> f_;
