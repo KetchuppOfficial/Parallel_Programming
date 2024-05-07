@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <algorithm>
 
 namespace parallel
 {
@@ -18,8 +19,15 @@ public:
 
     const std::vector<double> &storage() const { return storage_; }
 
-    const double &operator[](std::size_t k, std::size_t m) const { return storage_[k * N_x_ + m]; }
-    double &operator[](std::size_t k, std::size_t m) { return storage_[k * N_x_ + m]; }
+    const double &operator[](std::size_t k, std::size_t m) const { return storage_[m * N_t_ + k]; }
+    double &operator[](std::size_t k, std::size_t m) { return storage_[m * N_t_ + k]; }
+
+    void swap(std::vector<double> &rhs, std::size_t N_t, std::size_t N_x)
+    {
+        storage_.swap(rhs);
+        N_t_ = N_t;
+        N_x_ = N_x;
+    }
 
 private:
 

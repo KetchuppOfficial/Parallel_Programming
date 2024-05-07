@@ -32,34 +32,48 @@ public:
         if (init_cond(x_1) != boundary_cond(t_1))
             throw std::invalid_argument{"Initial and boundary condition are not coordinated"};
 
-        if (world.size() == 1)
+        const std::size_t x_size = grid_.x_size();
+        const std::size_t t_size = grid_.t_size();
+
+        if (const int w_size = world.size(); w_size == 1)
         {
-            for (auto i = 0uz; i != grid_.x_size(); ++i)
+            for (auto i = 0uz; i != x_size; ++i)
                 grid_[0, i] = init_cond(x_1 + i * h_);
 
-            for (auto i = 1uz; i != grid_.t_size(); ++i)
+            for (auto i = 1uz; i != t_size; ++i)
                 grid_[i, 0] = boundary_cond(t_1 + i * tau_);
 
             solve_sequential();
         }
         else
         {
-            for (auto start_i = grid_.x_size() * world.rank(), i = 0uz; i != grid_.x_size(); ++i)
+            const int rank = world.rank();
+
+            for (auto start_i = x_size * rank, i = 0uz; i != x_size; ++i)
                 grid_[0, i] = init_cond((start_i + i) * h_);
 
-            if (const int rank = world.rank(); rank == 0)
+            if (rank == 0)
             {
-                for (auto i = 1uz; i != grid_.t_size(); ++i)
+                for (auto i = 1uz; i != t_size; ++i)
                     grid_[i, 0] = boundary_cond(t_1 + i * tau_);
 
                 solve_left_border(world);
-            }
-            else if (rank == world.size() - 1)
-                solve_right_border(world);
-            else
-                solve_middle(world);
 
-            reduce(world);
+                std::vector<double> full_grid;
+                full_grid.reserve(t_size * x_size * w_size);
+
+                boost::mpi::gather(world, &grid_[0, 0], t_size * x_size, full_grid, 0);
+                grid_.swap(full_grid, t_size, x_size * w_size);
+            }
+            else
+            {
+                if (rank == w_size - 1)
+                    solve_right_border(world);
+                else
+                    solve_middle(world);
+
+                boost::mpi::gather(world, &grid_[0, 0], t_size * x_size, 0);
+            }
         }
     }
 
@@ -165,48 +179,6 @@ private:
                 cross(k, m);
 
             explicit_left_corner(k, N_x - 1);
-        }
-    }
-
-    void reduce(const boost::mpi::communicator &world)
-    {
-        constexpr int tag = 0;
-        const int rank = world.rank();
-        unsigned current_size = world.size();
-        unsigned current_rank = rank;
-
-        for (int shift = 1; current_size > 1; shift *= 2)
-        {
-            if (current_rank % 2)
-            {
-                world.send(rank - shift, tag, grid_.storage());
-                return;
-            }
-            else if (current_rank < current_size - 1)
-            {
-                std::vector<double> another_grid;
-                world.recv(rank + shift, tag, another_grid);
-
-                const std::size_t t_size = grid_.t_size();
-                const std::size_t lhs_x_size = grid_.x_size();
-                const std::size_t rhs_x_size = another_grid.size() / t_size;
-
-                Grid output{t_size, lhs_x_size + rhs_x_size};
-
-                for (auto k = 0uz; k != t_size; ++k)
-                {
-                    for (auto m = 0uz; m != lhs_x_size; ++m)
-                        output[k, m] = grid_[k, m];
-                    for (auto m = 0uz; m != rhs_x_size; ++m)
-                        output[k, m + lhs_x_size] = another_grid[k * rhs_x_size + m];
-                }
-
-                grid_ = std::move(output);
-            }
-
-            const std::div_t res = std::div(current_size, 2);
-            current_size = res.rem ? 1 + res.quot : res.quot;
-            current_rank /= 2;
         }
     }
 };

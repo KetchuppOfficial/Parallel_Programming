@@ -18,7 +18,8 @@ void plot_solution(const Transport_Equation_Solver_Base &solution, std::string_v
 
     std::vector<std::vector<double>> z(solution.t_size());
     for (auto i = 0; i != solution.t_size(); ++i)
-        z[i].insert(z[i].end(), &solution[i, 0], &solution[i, solution.x_size()]);
+        for (auto j = 0; j != solution.x_size(); ++j)
+            z[i].push_back(solution[i, j]);
 
     matplot::surf(x, y, z);
 
