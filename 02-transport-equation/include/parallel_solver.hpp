@@ -178,7 +178,7 @@ private:
 
             cross(k, 0, leftmost, grid_[k, 1]);
 
-            for (auto m = 1; m != N_x - 1; ++m)
+            for (auto m = 1uz; m != N_x - 1; ++m)
                 cross(k, m);
 
             explicit_left_corner(k, N_x - 1);
