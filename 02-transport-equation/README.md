@@ -35,16 +35,15 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     ./build/sequential --help
     # Allowed options:
     #     --help                Produce help message
-    #     --x-dots arg          Set the number of points onX axis of the grid. The
-    #                           number of points on T axis of the grid is 2 times
-    #                           greater
+    #     --t-dots arg          Set the number of points on T axis of the grid
+    #     --x-dots arg          Set the number of points on X axis of the grid
     #     --plot                Plot solution
     ```
 
     Example of usage:
 
     ```bash
-    ./build/sequential --x-dots 100 --plot
+    ./build/sequential --t-dots 20 --x-dots 100 --plot
     ```
 
 - Parallel program:
@@ -53,9 +52,9 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     mpirun -c N ./build/parallel --help
     # Allowed options:
     #     --help                   Produce help message
-    #     --x-dots-per-process arg Set the number of points on X axis of the grid of
-    #                              each process. The number of points on T axis of the
-    #                              grid is (2 * n_proc) times greater
+    #     --t-dots arg             Set the number of points on T axis of the grid.
+    #     --x-dots-per-process arg Set the number of points on X axis of the grid for
+    #                              each process
     #     --plot                   Plot solution
     ```
 
@@ -64,7 +63,7 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     Example of usage:
 
     ```bash
-    mpirun -c 6 ./build/parallel --x-dots-per-process 20 --plot
+    mpirun -c 5 ./build/parallel --t-dots 20 --x-dots-per-process 20 --plot
     ```
 
 ## Solution plot

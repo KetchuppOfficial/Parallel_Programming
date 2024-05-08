@@ -22,7 +22,7 @@ public:
                               two_arg_func heterogeneity,
                               one_arg_func init_cond, one_arg_func boundary_cond)
         : Transport_Equation_Solver_Base{a,
-                                         N_t, (t_2 - t_1) / N_t, N_x, (x_2 - x_1) / N_x,
+                                         N_t, (t_2 - t_1) / (N_t - 1), N_x, (x_2 - x_1) / (N_x - 1),
                                          heterogeneity}
     {
         if (init_cond(x_1) != boundary_cond(t_1))

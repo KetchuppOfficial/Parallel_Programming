@@ -16,9 +16,8 @@ int main(int argc, char *argv[])
 
     desc.add_options()
         ("help", "Produce help message")
-        ("x-dots", po::value<std::size_t>(),
-         "Set the number of points on X axis of the grid. "
-         "The number of points on T axis of the grid is 2 times greater")
+        ("t-dots", po::value<std::size_t>(), "Set the number of points on T axis of the grid")
+        ("x-dots", po::value<std::size_t>(), "Set the number of points on X axis of the grid")
         ("plot", "Plot solution");
 
     po::variables_map vm;
@@ -30,12 +29,21 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    std::size_t N_t;
+    if (vm.count("t-dots"))
+        N_t = vm["t-dots"].as<std::size_t>();
+    else
+    {
+        std::cout << "The number of points on T axis is not set. Abort" << std::endl;
+        return 0;
+    }
+
     std::size_t N_x;
     if (vm.count("x-dots"))
         N_x = vm["x-dots"].as<std::size_t>();
     else
     {
-        std::cout << "The number of segments on X axis of the grid is not set. Abort" << std::endl;
+        std::cout << "The number of points on X axis is not set. Abort" << std::endl;
         return 0;
     }
 
@@ -44,8 +52,8 @@ int main(int argc, char *argv[])
     parallel::Transport_Equation_Solver solution
     {
         2.0 /* a */,
-        0.0 /* t_1 */, 1.0 /* t_2 */, N_x * 2 - 1 /* N_t */,
-        0.0 /* x_1 */, 1.0 /* x_2 */, N_x - 1/* N_x */,
+        0.0 /* t_1 */, 1.0 /* t_2 */, N_t /* N_t */,
+        0.0 /* x_1 */, 1.0 /* x_2 */, N_x /* N_x */,
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
         [](double t){ return std::exp(-t); }

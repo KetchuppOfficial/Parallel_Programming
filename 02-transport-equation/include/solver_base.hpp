@@ -27,7 +27,7 @@ public:
     Transport_Equation_Solver_Base(double a,
                                    std::size_t N_t, double t_step, std::size_t N_x, double x_step,
                                    two_arg_func heterogeneity)
-        : grid_{N_t + 1, N_x + 1}, a_{a}, tau_{t_step}, h_{x_step}, f_{heterogeneity}
+        : grid_{N_t, N_x}, a_{a}, tau_{t_step}, h_{x_step}, f_{heterogeneity}
     {
         if (t_step < 0)
             throw std::invalid_argument{"Left time boundary must be less then right boundary"};
@@ -58,20 +58,9 @@ protected:
         if (a_ < 0 && -a_ * tau_ < h_)
             throw std::runtime_error{"The scheme is unstable for given parameters"};
 
-        for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
-            for (auto m = 1uz; m != grid_.x_size(); ++m)
+        for (auto m = 1uz; m != grid_.x_size(); ++m)
+            for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
                 implicit_left_corner(k, m);
-    }
-
-    /*
-     *      +
-     *      |
-     *   +--+
-     */
-    void explicit_left_corner(std::size_t k, std::size_t m)
-    {
-        grid_[k + 1, m] = grid_[k, m] + (a_ * tau_ / h_) * (grid_[k, m - 1] - grid_[k, m])
-                                      + tau_ * f_(k * tau_, m * h_);
     }
 
     /*
@@ -81,41 +70,13 @@ protected:
      */
     void implicit_left_corner(std::size_t k, std::size_t m)
     {
-        grid_[k + 1, m] = (h_ * grid_[k, m] + tau_ * a_ * grid_[k + 1, m - 1]
+        return implicit_left_corner(k, m, grid_[k + 1, m - 1]);
+    }
+
+    void implicit_left_corner(std::size_t k, std::size_t m, double leftmost)
+    {
+        grid_[k + 1, m] = (h_ * grid_[k, m] + tau_ * a_ * leftmost
                                             + tau_ * h_ * f_(k * tau_, m * h_)) / (h_ + tau_ * a_);
-    }
-
-    /*
-     *      +
-     *      |
-     *   +--+--+
-     */
-    void explicit_four_points(std::size_t k, std::size_t m)
-    {
-        explicit_four_points(k, m, grid_[k, m - 1], grid_[k, m + 1]);
-    }
-
-    void explicit_four_points(std::size_t k, std::size_t m, double left, double right)
-    {
-        grid_[k + 1, m] =
-            grid_[k, m] + (a_ * tau_ / (2 * h_)) * (left - right)
-                        + (a_ * tau_ * tau_ / (2 * h_ * h_)) * (right - 2 * grid_[k, m] + left)
-                        + tau_ * f_(k * tau_, m * h_);
-    }
-
-    /*
-     *      +
-     *      |
-     *   +--+--+
-     *      |
-     *      +
-     */
-    void cross(std::size_t k, std::size_t m) { cross(k, m, grid_[k, m - 1], grid_[k, m + 1]); }
-
-    void cross(std::size_t k, std::size_t m, double left, double right)
-    {
-        grid_[k + 1, m] = grid_[k - 1, m] + (a_ * tau_ / h_) * (left - right)
-                                          + 2 * tau_ * f_(k * tau_, m * h_);
     }
 
     Grid grid_;

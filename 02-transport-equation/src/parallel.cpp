@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
 
     desc.add_options()
         ("help", "Produce help message")
+        ("t-dots", po::value<std::size_t>(), "Set the number of points on T axis of the grid.")
         ("x-dots-per-process", po::value<std::size_t>(),
-         "Set the number of points on X axis of the grid of each process. "
-         "The number of points on T axis of the grid is (2 * n_proc) times greater")
+         "Set the number of points on X axis of the grid for each process")
         ("plot", "Plot solution");
 
     po::variables_map vm;
@@ -38,13 +38,24 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    std::size_t N_t;
+    if (vm.count("t-dots"))
+        N_t = vm["t-dots"].as<std::size_t>();
+    else
+    {
+        if (world.rank() == 0)
+            std::cout << "The number of points on T axis is not set. Abort" << std::endl;
+
+        return 0;
+    }
+
     std::size_t N_x;
     if (vm.count("x-dots-per-process"))
         N_x = world.size() * vm["x-dots-per-process"].as<std::size_t>();
     else
     {
         if (world.rank() == 0)
-            std::cout << "Multiplier is not set. Abort" << std::endl;
+            std::cout << "The number of points on X axis is not set. Abort" << std::endl;
 
         return 0;
     }
@@ -54,8 +65,8 @@ int main(int argc, char *argv[])
     parallel::Transport_Equation_PSolver solution
     {
         world, 2.0 /* a */,
-        0.0 /* t_1 */, 1.0 /* T */, N_x * 2 - 1 /* N_t */,
-        0.0 /* x_1 */, 1.0 /* X */, N_x - 1 /* N_x */,
+        0.0 /* t_1 */, 1.0 /* T */, N_t /* N_t */,
+        0.0 /* x_1 */, 1.0 /* X */, N_x /* N_x */,
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
         [](double t){ return std::exp(-t); }
