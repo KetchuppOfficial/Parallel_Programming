@@ -55,22 +55,15 @@ protected:
 
     void solve_sequential()
     {
-        for (auto m = 1; m != grid_.x_size() - 1; ++m)
-            explicit_four_points(0, m);
+        if (a_ < 0 && -a_ * tau_ < h_)
+            throw std::runtime_error{"The scheme is unstable for given parameters"};
 
-        explicit_left_corner(0, grid_.x_size() - 1);
-
-        for (auto k = 1; k != grid_.t_size() - 1; ++k)
-        {
-            for (auto m = 1; m != grid_.x_size() - 1; ++m)
-                cross(k, m);
-
-            explicit_left_corner(k, grid_.x_size() - 1);
-        }
+        for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+            for (auto m = 1uz; m != grid_.x_size(); ++m)
+                implicit_left_corner(k, m);
     }
 
     /*
-     * to use on the right border
      *      +
      *      |
      *   +--+
@@ -82,7 +75,17 @@ protected:
     }
 
     /*
-     * to compute the second layer
+     *   +--+
+     *      |
+     *      +
+     */
+    void implicit_left_corner(std::size_t k, std::size_t m)
+    {
+        grid_[k + 1, m] = (h_ * grid_[k, m] + tau_ * a_ * grid_[k + 1, m - 1]
+                                            + tau_ * h_ * f_(k * tau_, m * h_)) / (h_ + tau_ * a_);
+    }
+
+    /*
      *      +
      *      |
      *   +--+--+
@@ -101,7 +104,6 @@ protected:
     }
 
     /*
-     * to use in ordinary cases
      *      +
      *      |
      *   +--+--+
