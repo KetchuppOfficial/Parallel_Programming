@@ -86,6 +86,7 @@ private:
         constexpr int tag = 0;
         constexpr int next_node_rank = 1;
         const std::size_t N_x = grid_.x_size();
+        const std::size_t N_t = grid_.t_size();
 
         world.send(next_node_rank, tag, grid_[0, N_x - 1]);
 
@@ -97,12 +98,12 @@ private:
 
         explicit_four_points(0, N_x - 1, grid_[0, N_x - 2], rightmost);
 
-        for (auto k = 1uz; k != grid_.t_size() - 1; ++k)
+        for (auto k = 1uz; k != N_t - 1; ++k)
         {
             world.send(next_node_rank, tag, grid_[k, N_x - 1]);
             world.recv(next_node_rank, tag, rightmost);
 
-            for (auto m = 1; m != N_x - 1; ++m)
+            for (auto m = 1uz; m != N_x - 1; ++m)
                 cross(k, m);
 
             cross(k, N_x - 1, grid_[k, N_x - 2], rightmost);
@@ -116,6 +117,7 @@ private:
         constexpr int tag = 0;
         const int rank = world.rank();
         const std::size_t N_x = grid_.x_size();
+        const std::size_t N_t = grid_.t_size();
 
         world.send(rank + 1, tag, grid_[0, N_x - 1]);
         world.send(rank - 1, tag, grid_[0, 0]);
@@ -131,7 +133,7 @@ private:
 
         explicit_four_points(0, N_x - 1, grid_[0, N_x - 2], rightmost);
 
-        for (auto k = 1uz; k != grid_.t_size() - 1; ++k)
+        for (auto k = 1uz; k != N_t - 1; ++k)
         {
             world.send(rank + 1, tag, grid_[k, N_x - 1]);
             world.send(rank - 1, tag, grid_[k, 0]);
@@ -141,7 +143,7 @@ private:
 
             cross(k, 0, leftmost, grid_[k, 1]);
 
-            for (auto m = 1; m != N_x - 1; ++m)
+            for (auto m = 1uz; m != N_x - 1; ++m)
                 cross(k, m);
 
             cross(k, N_x - 1, grid_[k, N_x - 2], rightmost);
@@ -155,6 +157,7 @@ private:
         constexpr int tag = 0;
         const int rank = world.rank();
         const std::size_t N_x = grid_.x_size();
+        const std::size_t N_t = grid_.t_size();
 
         world.send(rank - 1, tag, grid_[0, 0]);
 
@@ -168,7 +171,7 @@ private:
 
         explicit_left_corner(0, N_x - 1);
 
-        for (auto k = 1uz; k != grid_.t_size() - 1; ++k)
+        for (auto k = 1uz; k != N_t - 1; ++k)
         {
             world.send(rank - 1, tag, grid_[k, 0]);
             world.recv(rank - 1, tag, leftmost);
