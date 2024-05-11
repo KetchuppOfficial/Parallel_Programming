@@ -22,3 +22,12 @@ target_include_directories(sequential
 
 target_link_libraries(sequential
                       PRIVATE m)
+
+add_executable(parallel
+               ${SRC_DIR}/parallel.cpp ${SRC_DIR}/parallel_integrator.cpp)
+
+target_include_directories(parallel
+                           PRIVATE ${INCLUDE_DIR})
+
+target_link_libraries(parallel
+                      PRIVATE m pthread)
