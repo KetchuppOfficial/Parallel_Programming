@@ -34,7 +34,9 @@ double Parallel_Integrator::integrate(double a, double b, std::size_t n_threads)
 {
     double f_a = f_(a), f_b = f_(b);
 
-    if (a < b)
+    if (a == b)
+        return 0.0;
+    else if (a < b)
         global_stack.emplace(a, f_a, b, f_b, std::midpoint(f_a, f_b) * (b - a));
     else
         global_stack.emplace(b, f_b, a, f_a, std::midpoint(f_a, f_b) * (a - b));

@@ -25,16 +25,16 @@ public:
     {
         double f_a = f_(a), f_b = f_(b);
 
-        return (a < b) ?  integrate_with_stack(a, f_a, b, f_b)
-                       : -integrate_with_stack(b, f_b, a, f_b);
+        return (a <= b) ?  integrate_with_stack(a, f_a, b, f_b)
+                        : -integrate_with_stack(b, f_b, a, f_b);
     }
 
     double integrate(double a, double b, recursive tag) const
     {
         double f_a = f_(a), f_b = f_(b);
 
-        return (a < b) ?  integrate_recursive(a, f_a, b, f_b)
-                       : -integrate_recursive(b, f_b, a, f_a);
+        return (a <= b) ?  integrate_recursive(a, f_a, b, f_b)
+                        : -integrate_recursive(b, f_b, a, f_a);
     }
 
 private:
