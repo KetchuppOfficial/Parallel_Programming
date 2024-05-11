@@ -64,7 +64,7 @@ private:
 
             if (not_good_approximation_yet(I_ab, I_acb))
             {
-                stack.emplace(a, c, f_a, f_c, I_ac);
+                stack.emplace(a, f_a, c, f_c, I_ac);
                 a = c;
                 f_a = f_c;
                 I_ab = I_cb;
@@ -76,7 +76,7 @@ private:
                 if (stack.empty())
                     break;
 
-                std::tie(a, b, f_a, f_b, I_ab) = stack.top();
+                std::tie(a, f_a, b, f_b, I_ab) = stack.top();
                 stack.pop();
             }
         }
