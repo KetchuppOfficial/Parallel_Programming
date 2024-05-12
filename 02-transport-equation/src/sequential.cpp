@@ -4,6 +4,7 @@
 #include <iostream>
 #include <optional>
 #include <tuple>
+#include <string>
 
 #include <boost/program_options.hpp>
 
@@ -11,8 +12,10 @@
 #include "solution_visualization.hpp"
 #include "analytical_solution.hpp"
 
+using Scheme = parallel::Transport_Equation_Solver_Base::Scheme;
+
 static auto get_options(int argc, char *argv[])
-    -> std::optional<std::tuple<std::size_t, std::size_t, bool>>
+    -> std::optional<std::tuple<std::size_t, std::size_t, Scheme, bool>>
 {
     namespace po = boost::program_options;
 
@@ -21,6 +24,11 @@ static auto get_options(int argc, char *argv[])
         ("help", "Produce help message")
         ("t-dots", po::value<std::size_t>(), "Set the number of points on T axis of the grid")
         ("x-dots", po::value<std::size_t>(), "Set the number of points on X axis of the grid")
+        ("scheme", po::value<std::string>(), "Choose difference scheme:\n"
+                                             "  - implicit-left-corner;\n"
+                                             "  - explicit-left-corner;\n"
+                                             "  - explicit-tree-points;\n"
+                                             "  - rectangle")
         ("plot", "Plot solution");
 
     po::variables_map vm;
@@ -50,9 +58,33 @@ static auto get_options(int argc, char *argv[])
         return std::nullopt;
     }
 
+    std::string scheme_str;
+    if (vm.count("scheme"))
+        scheme_str = vm["scheme"].as<std::string>();
+    else
+    {
+        std::cout << "Difference scheme is not set. Abort" << std::endl;
+        return std::nullopt;
+    }
+
+    Scheme scheme;
+    if (scheme_str == "implicit-left-corner")
+        scheme = Scheme::implicit_left_corner;
+    else if (scheme_str == "explicit-left-corner")
+        scheme = Scheme::explicit_left_corner;
+    else if (scheme_str == "explicit-three-points")
+        scheme = Scheme::explicit_three_points;
+    else if (scheme_str == "rectangle")
+        scheme = Scheme::rectangle;
+    else
+    {
+        std::cout << "Unsupported difference scheme. Abort" << std::endl;
+        return std::nullopt;
+    }
+
     bool plot = vm.count("plot");
 
-    return std::tuple{N_t, N_x, plot};
+    return std::tuple{N_t, N_x, scheme, plot};
 }
 
 int main(int argc, char *argv[])
@@ -61,7 +93,7 @@ int main(int argc, char *argv[])
     if (!opts.has_value())
         return 0;
 
-    auto [N_t, N_x, plot] = opts.value();
+    auto [N_t, N_x, scheme, plot] = opts.value();
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -73,7 +105,7 @@ int main(int argc, char *argv[])
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
         [](double t){ return std::exp(-t); },
-        parallel::Transport_Equation_Solver_Base::Scheme::explicit_three_points
+        scheme
     };
 
     auto stop = std::chrono::high_resolution_clock::now();
