@@ -2,7 +2,7 @@
 
 ## Equation
 
-$$ \frac{\partial u}{\partial t} + 2\frac{\partial u}{\partial t} = x + t;\ x \in (0; X),\ t \in (0; T)$$
+$$ \frac{\partial u}{\partial t} + 2\frac{\partial u}{\partial x} = x + t;\ x \in (0; X),\ t \in (0; T)$$
 
 $$u|_{t = 0} = \cos{(\pi x)};\ x \in [0; X]$$
 
