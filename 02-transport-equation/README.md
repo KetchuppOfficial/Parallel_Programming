@@ -48,13 +48,18 @@ literal suffix for size_t and std::unreachable (i.e. g++-12 and clang++-15 or ne
     #     --help                Produce help message
     #     --t-dots arg          Set the number of points on T axis of the grid
     #     --x-dots arg          Set the number of points on X axis of the grid
+    #     --scheme arg          Choose difference scheme:
+    #                             - implicit-left-corner;
+    #                             - explicit-left-corner;
+    #                             - explicit-tree-points;
+    #                             - rectangle
     #     --plot                Plot solution
     ```
 
     Example of usage:
 
     ```bash
-    ./build/sequential --t-dots 20 --x-dots 100 --plot
+    ./build/sequential --t-dots 20 --x-dots 100 --scheme rectangle --plot
     ```
 
 - Parallel program:
