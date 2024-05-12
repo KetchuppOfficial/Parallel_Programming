@@ -1,5 +1,6 @@
 #include <vector>
 #include <format>
+#include <cmath>
 
 #include <matplot/matplot.h>
 
@@ -23,8 +24,9 @@ void plot_solution(const Transport_Equation_Solver_Base &solution, std::string_v
 
     matplot::surf(x, y, z);
 
-    matplot::sgtitle(std::format("du/dt + {:.2f} * du/x = {}; t in [0; {:.2f}], x in [0; {:.2f}]",
-                                 solution.parameter(), heterogeneity, T, X));
+    matplot::sgtitle(std::format("du/dt {} {:.2f} * du/x = {}; t in [0; {:.2f}], x in [0; {:.2f}]",
+                                 solution.parameter() > 0 ? '+' : '-',
+                                 std::abs(solution.parameter()), heterogeneity, T, X));
 
     matplot::xlabel("x");
     matplot::ylabel("t");
