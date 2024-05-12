@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
         0.0 /* x_1 */, 1.0 /* x_2 */, N_x /* N_x */,
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
-        [](double t){ return std::exp(-t); }
+        [](double t){ return std::exp(-t); },
+        parallel::Transport_Equation_Solver_Base::Scheme::implicit_left_corner
     };
 
     auto stop = std::chrono::high_resolution_clock::now();

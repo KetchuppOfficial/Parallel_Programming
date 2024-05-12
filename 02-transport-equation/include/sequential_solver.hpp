@@ -15,12 +15,14 @@ public:
 
     using Transport_Equation_Solver_Base::two_arg_func;
     using Transport_Equation_Solver_Base::one_arg_func;
+    using Transport_Equation_Solver_Base::Scheme;
 
     Transport_Equation_Solver(double a,
                               double t_1, double t_2, std::size_t N_t,
                               double x_1, double x_2, std::size_t N_x,
                               two_arg_func heterogeneity,
-                              one_arg_func init_cond, one_arg_func boundary_cond)
+                              one_arg_func init_cond, one_arg_func boundary_cond,
+                              Scheme scheme)
         : Transport_Equation_Solver_Base{a,
                                          N_t, (t_2 - t_1) / (N_t - 1), N_x, (x_2 - x_1) / (N_x - 1),
                                          heterogeneity}
@@ -34,7 +36,7 @@ public:
         for (auto i = 1; i != grid_.t_size(); ++i)
             grid_[i, 0] = boundary_cond(t_1 + i * tau_);
 
-        solve_sequential();
+        solve_sequential(scheme);
     }
 };
 

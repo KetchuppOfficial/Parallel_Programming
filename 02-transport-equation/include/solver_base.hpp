@@ -3,11 +3,19 @@
 
 #include <cstddef>
 #include <functional>
+#include <cmath>
+#include <cassert>
+#include <utility>
 
 #include "grid.hpp"
 
 namespace parallel
 {
+
+struct unstable_scheme : public std::runtime_error
+{
+    unstable_scheme() : std::runtime_error{"The scheme is unstable for given parameters"} {}
+};
 
 /*
  * Solves equation:
@@ -49,18 +57,86 @@ public:
 
     double parameter() const noexcept { return a_; }
 
+    enum class Scheme
+    {
+        implicit_left_corner,
+        explicit_three_points,
+        explicit_left_corner,
+        rectangle
+    };
+
 protected:
 
     ~Transport_Equation_Solver_Base() = default;
 
-    void solve_sequential()
+    void solve_sequential(Scheme scheme)
     {
-        if (a_ < 0 && -a_ * tau_ < h_)
-            throw std::runtime_error{"The scheme is unstable for given parameters"};
+        const double courant = a_ * tau_ / h_;
 
-        for (auto m = 1uz; m != grid_.x_size(); ++m)
-            for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
-                implicit_left_corner(k, m);
+        switch (scheme)
+        {
+            case Scheme::implicit_left_corner:
+
+                if (courant > -1 && courant < 0)
+                    throw unstable_scheme{};
+
+                for (auto m = 1uz; m != grid_.x_size(); ++m)
+                    for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+                        implicit_left_corner(courant, k, m);
+
+                break;
+
+            case Scheme::explicit_left_corner:
+
+                if (courant < 0 || courant > 1)
+                    throw unstable_scheme{};
+
+                for (auto m = 1uz; m != grid_.x_size(); ++m)
+                    for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+                        explicit_left_corner(courant, k, m);
+
+                break;
+
+            case Scheme::rectangle:
+
+                // unconditionally stable
+
+                for (auto m = 1uz; m != grid_.x_size(); ++m)
+                    for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+                        rectangle(courant, k, m);
+
+                break;
+
+            case Scheme::explicit_three_points:
+
+                if (std::abs(courant) > 1)
+                    throw unstable_scheme{};
+
+                for (auto m = 1uz; m != grid_.x_size() - 1; ++m)
+                    for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+                        explicit_three_points(courant, k, m);
+
+                for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
+                    explicit_left_corner(courant, k, grid_.x_size() - 1);
+
+                break;
+
+            default:
+                std::unreachable();
+        }
+    }
+
+    /*
+     *      +
+     *      |
+     *   +--+
+     */
+    void explicit_left_corner(double courant, std::size_t k, std::size_t m)
+    {
+        assert(0 <= courant && courant <= 1); // stability condition
+
+        grid_[k + 1, m] = (1 - courant) * grid_[k, m] + courant * grid_[k, m - 1]
+                        + tau_ * f_(k * tau_, m * h_);
     }
 
     /*
@@ -68,15 +144,43 @@ protected:
      *      |
      *      +
      */
-    void implicit_left_corner(std::size_t k, std::size_t m)
+    void implicit_left_corner(double courant, std::size_t k, std::size_t m)
     {
-        return implicit_left_corner(k, m, grid_[k + 1, m - 1]);
+        implicit_left_corner(courant, k, m, grid_[k + 1, m - 1]);
     }
 
-    void implicit_left_corner(std::size_t k, std::size_t m, double leftmost)
+    void implicit_left_corner(double courant, std::size_t k, std::size_t m, double leftmost)
     {
-        grid_[k + 1, m] = (h_ * grid_[k, m] + tau_ * a_ * leftmost
-                                            + tau_ * h_ * f_(k * tau_, m * h_)) / (h_ + tau_ * a_);
+        assert(courant => 0 || courant <= -1); // stability condition
+
+        grid_[k + 1, m] = (grid_[k, m] + courant * leftmost
+                                       + tau_ * f_(k * tau_, m * h_)) / (1 + courant);
+    }
+
+    /*
+     *      +
+     *      |
+     *   +-----+
+     */
+    void explicit_three_points(double courant, std::size_t k, std::size_t m)
+    {
+        assert(std::abs(courant) <= 1); // stability condition
+
+        grid_[k + 1, m] = 0.5 * ((1 - courant) * grid_[k, m + 1] +
+                                 (1 + courant) * grid_[k, m - 1]) + tau_ * f_(k * tau_, m * h_);
+    }
+
+    /*
+     *   +-----+
+     *   |     |
+     *   +-----+
+     */
+    void rectangle(double courant, std::size_t k, std::size_t m)
+    {
+        const double f = f_(k * tau_ + 0.5 * tau_, m * h_ + 0.5 * h_);
+
+        grid_[k + 1, m] = ((grid_[k, m] - grid_[k + 1, m - 1]) * (1 - courant)
+                        + 2 * tau_ * f) / (1 + courant) + grid_[k, m - 1];
     }
 
     Grid grid_;
