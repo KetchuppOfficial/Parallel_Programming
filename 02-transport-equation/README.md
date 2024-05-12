@@ -35,8 +35,8 @@ cmake --build build [--target <tgt>]
 If --target option is omitted, both targets will be built.
 
 > [!NOTE]
-> Your compiler must support some features of C++23 such as multidimensional subscript operator and
-literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
+> Your compiler must support some features of C++23 such as multidimensional subscript operator,
+literal suffix for size_t and std::unreachable (i.e. g++-12 and clang++-15 or newer)
 
 ### 2) How to run
 
