@@ -2,11 +2,22 @@
 
 ## Equation
 
-$$ \frac{\partial u}{\partial t} + 2\frac{\partial u}{\partial x} = x + t;\ x \in (0; X),\ t \in (0; T)$$
+$$ \frac{\partial u}{\partial t} + 2\frac{\partial u}{\partial x} = x + t;\ x, t \in (0; 1) $$
 
-$$u|_{t = 0} = \cos{(\pi x)};\ x \in [0; X]$$
+$$u|_{t = 0} = \cos{(\pi x)};\ x \in [0; 1]$$
 
-$$u|_{x = 0} = e^{-t};\ t \in [0; T]$$
+$$u|_{x = 0} = e^{-t};\ t \in [0; 1]$$
+
+## Analytical solution
+
+$$
+u(x, t) = \frac{1}{32}(x + 2t)(5x + 2t) +
+\begin{cases}
+    \cos{(\pi(x - 2t))} - \frac{5}{32}(x - 2t)^2,\ x \geq 2t \\
+    e^{\frac{x}{2} - 1} - \frac{1}{32}(x - 2t)^2,\ x < 25
+\end{cases},\
+x, t \in [0; 1]
+$$
 
 ## How to build
 
