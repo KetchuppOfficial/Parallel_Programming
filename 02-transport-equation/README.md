@@ -77,6 +77,22 @@ literal suffix for size_t (i.e. g++-12 and clang++-15 or newer)
     mpirun -c 5 ./build/parallel --t-dots 20 --x-dots-per-process 20 --plot
     ```
 
-## Solution plot
+## Plots for different schemes
 
-![example](./pictures/example.jpg)
+All grids contain 60 points on the T axis and 30 points on the X axis.
+
+- Implicit left corner:
+
+    ![ilc](./pictures/implicit-left-corner.png)
+
+- Explicit left corner:
+
+    ![elc](./pictures/explicit-left-corner.png)
+
+- Explicit tree points:
+
+    ![etp](./pictures/explicit-tree-points.png)
+
+- Rectangle:
+
+    ![r](./pictures/rectangle.png)
