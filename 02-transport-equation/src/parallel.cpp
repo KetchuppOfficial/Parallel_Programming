@@ -2,6 +2,8 @@
 #include <numbers>
 #include <chrono>
 #include <iostream>
+#include <optional>
+#include <tuple>
 
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
@@ -9,16 +11,14 @@
 
 #include "parallel_solver.hpp"
 #include "solution_visualization.hpp"
+#include "analytical_solution.hpp"
 
-int main(int argc, char *argv[])
+static auto get_options(int argc, char *argv[], const boost::mpi::communicator &world)
+    -> std::optional<std::tuple<std::size_t, std::size_t, bool>>
 {
     namespace po = boost::program_options;
 
-    boost::mpi::environment env{argc, argv};
-    boost::mpi::communicator world;
-
     po::options_description desc{"Allowed options"};
-
     desc.add_options()
         ("help", "Produce help message")
         ("t-dots", po::value<std::size_t>(), "Set the number of points on T axis of the grid.")
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         if (world.rank() == 0)
             std::cout << desc << std::endl;
 
-        return 0;
+        return std::nullopt;
     }
 
     std::size_t N_t;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         if (world.rank() == 0)
             std::cout << "The number of points on T axis is not set. Abort" << std::endl;
 
-        return 0;
+        return std::nullopt;
     }
 
     std::size_t N_x;
@@ -57,8 +57,24 @@ int main(int argc, char *argv[])
         if (world.rank() == 0)
             std::cout << "The number of points on X axis is not set. Abort" << std::endl;
 
-        return 0;
+        return std::nullopt;
     }
+
+    bool plot = vm.count("plot");
+
+    return std::tuple{N_t, N_x, plot};
+}
+
+int main(int argc, char *argv[])
+{
+    boost::mpi::environment env{argc, argv};
+    boost::mpi::communicator world;
+
+    auto opts = get_options(argc, argv, world);
+    if (!opts.has_value())
+        return 0;
+
+    auto [N_t, N_x, plot] = opts.value();
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -81,8 +97,8 @@ int main(int argc, char *argv[])
                   << ((world.size() > 1) ? " nodes" : " node") << " took: "
                   << std::chrono::duration_cast<mcs>(stop - start).count() << " mcs" << std::endl;
 
-        if (vm.count("plot"))
-            plot_solution(solution, "x + t");
+        if (plot)
+            plot_solution(solution, "x + t", parallel::analytical_solution);
     }
 
     return 0;

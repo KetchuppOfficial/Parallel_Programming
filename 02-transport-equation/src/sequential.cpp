@@ -2,18 +2,21 @@
 #include <numbers>
 #include <chrono>
 #include <iostream>
+#include <optional>
+#include <tuple>
 
 #include <boost/program_options.hpp>
 
 #include "sequential_solver.hpp"
 #include "solution_visualization.hpp"
+#include "analytical_solution.hpp"
 
-int main(int argc, char *argv[])
+static auto get_options(int argc, char *argv[])
+    -> std::optional<std::tuple<std::size_t, std::size_t, bool>>
 {
     namespace po = boost::program_options;
 
     po::options_description desc{"Allowed options"};
-
     desc.add_options()
         ("help", "Produce help message")
         ("t-dots", po::value<std::size_t>(), "Set the number of points on T axis of the grid")
@@ -26,7 +29,7 @@ int main(int argc, char *argv[])
     if (vm.count("help"))
     {
         std::cout << desc << std::endl;
-        return 0;
+        return std::nullopt;
     }
 
     std::size_t N_t;
@@ -35,7 +38,7 @@ int main(int argc, char *argv[])
     else
     {
         std::cout << "The number of points on T axis is not set. Abort" << std::endl;
-        return 0;
+        return std::nullopt;
     }
 
     std::size_t N_x;
@@ -44,8 +47,21 @@ int main(int argc, char *argv[])
     else
     {
         std::cout << "The number of points on X axis is not set. Abort" << std::endl;
-        return 0;
+        return std::nullopt;
     }
+
+    bool plot = vm.count("plot");
+
+    return std::tuple{N_t, N_x, plot};
+}
+
+int main(int argc, char *argv[])
+{
+    auto opts = get_options(argc, argv);
+    if (!opts.has_value())
+        return 0;
+
+    auto [N_t, N_x, plot] = opts.value();
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -57,7 +73,7 @@ int main(int argc, char *argv[])
         [](double t, double x){ return x + t; },
         [](double x){ return std::cos(std::numbers::pi * x); },
         [](double t){ return std::exp(-t); },
-        parallel::Transport_Equation_Solver_Base::Scheme::implicit_left_corner
+        parallel::Transport_Equation_Solver_Base::Scheme::explicit_three_points
     };
 
     auto stop = std::chrono::high_resolution_clock::now();
@@ -66,8 +82,8 @@ int main(int argc, char *argv[])
     std::cout << "Sequential solving took: "
               << std::chrono::duration_cast<mcs>(stop - start).count() << " mcs" << std::endl;
 
-    if (vm.count("plot"))
-        plot_solution(solution, "x + t");
+    if (plot)
+        parallel::plot_solution(solution, "x + t", parallel::analytical_solution);
 
     return 0;
 }
