@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cassert>
 #include <utility>
+#include <numeric>
 
 #include "grid.hpp"
 
@@ -117,7 +118,7 @@ protected:
                         explicit_three_points(courant, k, m);
 
                 for (auto k = 0uz; k != grid_.t_size() - 1; ++k)
-                    explicit_left_corner(courant, k, grid_.x_size() - 1);
+                    rectangle(courant, k, grid_.x_size() - 1);
 
                 break;
 
