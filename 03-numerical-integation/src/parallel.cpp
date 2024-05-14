@@ -1,9 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
-#include <format>
 #include <tuple>
 #include <optional>
+#include <print>
 
 #include <boost/program_options.hpp>
 
@@ -35,7 +35,7 @@ static std::optional<std::tuple<double, double, std::size_t>> get_options(int ar
         a = vm["from"].as<double>();
     else
     {
-        std::cout << "The lower limit of integration is not set. Abort" << std::endl;
+        std::println("The lower limit of integration is not set. Abort");
         return std::nullopt;
     }
 
@@ -44,7 +44,7 @@ static std::optional<std::tuple<double, double, std::size_t>> get_options(int ar
         b = vm["to"].as<double>();
     else
     {
-        std::cout << "The upper limit of integration is not set. Abort" << std::endl;
+        std::println("The upper limit of integration is not set. Abort");
         return std::nullopt;
     }
 
@@ -53,7 +53,7 @@ static std::optional<std::tuple<double, double, std::size_t>> get_options(int ar
         n_threads = vm["n-threads"].as<std::size_t>();
     else
     {
-        std::cout << "The number of threads is not set. Abort" << std::endl;
+        std::println("The number of threads is not set. Abort");
         return std::nullopt;
     }
 
@@ -76,9 +76,8 @@ int main(int argc, char *argv[])
 
     using ms = std::chrono::milliseconds;
 
-    std::cout << std::format("Computation on {} threads took ", n_threads)
-              << std::chrono::duration_cast<ms>(finish - start).count() << " ms\n"
-              << "    I = " << I << std::endl;
+    std::println("Computation on {} threads took {} ms\n    I = {}",
+                 n_threads, std::chrono::duration_cast<ms>(finish - start).count(), I);
 
     return 0;
 }

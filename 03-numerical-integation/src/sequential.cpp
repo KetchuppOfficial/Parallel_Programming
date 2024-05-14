@@ -3,6 +3,7 @@
 #include <chrono>
 #include <utility>
 #include <optional>
+#include <print>
 
 #include <boost/program_options.hpp>
 
@@ -33,7 +34,7 @@ static std::optional<std::pair<double, double>> get_options(int argc, char *argv
         a = vm["from"].as<double>();
     else
     {
-        std::cout << "The lower limit of integration is not set. Abort" << std::endl;
+        std::println("The lower limit of integration is not set. Abort");
         return std::nullopt;
     }
 
@@ -42,7 +43,7 @@ static std::optional<std::pair<double, double>> get_options(int argc, char *argv
         b = vm["to"].as<double>();
     else
     {
-        std::cout << "The upper limit of integration is not set. Abort" << std::endl;
+        std::println("The upper limit of integration is not set. Abort");
         return std::nullopt;
     }
 
@@ -65,17 +66,15 @@ int main(int argc, char *argv[])
 
     using ms = std::chrono::milliseconds;
 
-    std::cout << "Non-recursive computation took "
-              << std::chrono::duration_cast<ms>(finish - start).count() << " ms\n"
-              << "    I = " << I << std::endl;
+    std::println("Non-recursive computation took {} ms\n"
+                 "    I = {}", std::chrono::duration_cast<ms>(finish - start).count(), I);
 
     start = std::chrono::high_resolution_clock::now();
     I = integrator.integrate(a, b, parallel::Sequential_Integrator::recursive{});
     finish = std::chrono::high_resolution_clock::now();
 
-    std::cout << "Recursive computation took "
-              << std::chrono::duration_cast<ms>(finish - start).count() << " ms\n"
-              << "    I = " << I << std::endl;
+    std::println("Recursive computation took {} ms\n"
+                 "    I = {}", std::chrono::duration_cast<ms>(finish - start).count(), I);
 
     return 0;
 }
