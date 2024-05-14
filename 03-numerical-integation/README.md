@@ -20,8 +20,8 @@ cmake --build build [--target <tgt>]
 If --target option is omitted, both targets will be built.
 
 > [!NOTE]
-> Your compiler must support a feature of C++23: literal suffix for size_t
-(i.e. g++-11 and clang++-13 or newer)
+> Your compiler must support a feature of C++23: literal suffix for size_t and std::println
+(i.e. g++-14 and clang++-18 or newer)
 
 ### 2) How to run
 
