@@ -10,6 +10,7 @@
 #include <utility>
 #include <cstddef>
 #include <functional>
+#include <ranges>
 
 #include "parallel_integrator.hpp"
 
@@ -47,7 +48,7 @@ double Parallel_Integrator::integrate(double a, double b, std::size_t n_threads)
     std::vector<std::future<double>> futures;
     futures.reserve(n_threads);
 
-    for (auto i = 0uz; i != n_threads; ++i)
+    for (auto i : std::views::iota(0uz, n_threads))
     {
         std::packaged_task<double()> task{std::bind(&Parallel_Integrator::integration_job,
                                                     this, n_threads)};
@@ -97,7 +98,7 @@ double Parallel_Integrator::integration_job(std::size_t n_threads) const
         n_active_threads--;
         if (n_active_threads == 0 && global_stack.empty())
         {
-            for (auto i = 0uz; i < n_threads; ++i)
+            for (auto i : std::views::iota(0uz, n_threads))
                 global_stack.emplace(1.0, NAN, 0.0, NAN, NAN);
 
             job_present_sem.release();
