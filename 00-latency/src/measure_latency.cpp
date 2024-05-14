@@ -2,6 +2,8 @@
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
+#include <print>
+#include <ranges>
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
@@ -41,7 +43,7 @@ int main(int argc, char *argv[])
     else
     {
         if (world.rank() == 0)
-            std::cout << "The number of messages is not set. Abort" << std::endl;
+            std::println("The number of messages is not set. Abort");
 
         return 0;
     }
@@ -52,18 +54,18 @@ int main(int argc, char *argv[])
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        for (auto i = 0uz; i != N; ++i)
+        for (auto i : std::views::iota(0uz, N))
             world.send(1, tag, std::vector{3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5});
 
         auto finish = std::chrono::high_resolution_clock::now();
 
         using mcs = std::chrono::microseconds;
-        std::cout << "Sending " << N << " instance of std::vector took "
-                  << std::chrono::duration_cast<mcs>(finish - start).count() << " mcs" << std::endl;
+        std::println("Sending {} instance of std::vector took {} mcs",
+                     N, std::chrono::duration_cast<mcs>(finish - start).count());
     }
     else if (world.rank() == 1)
     {
-        for (auto i = 0uz; i != N; ++i)
+        for (auto i : std::views::iota(0uz, N))
         {
             std::vector<int> pi;
             world.recv(0, tag, pi);
