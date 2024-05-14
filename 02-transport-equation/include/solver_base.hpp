@@ -6,7 +6,6 @@
 #include <cmath>
 #include <cassert>
 #include <utility>
-#include <numeric>
 
 #include "grid.hpp"
 
