@@ -14,9 +14,11 @@ find_package(Boost REQUIRED
 add_executable(hello ./src/hello.cpp)
 add_executable(harmonic_series ./src/harmonic-series.cpp)
 add_executable(ordered_access ./src/ordered-access.cpp)
+add_executable(nested ./src/nested.cpp)
 
 target_link_libraries(hello PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(harmonic_series
                       PRIVATE OpenMP::OpenMP_CXX
                       PRIVATE Boost::program_options)
 target_link_libraries(ordered_access PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(nested PRIVATE OpenMP::OpenMP_CXX)
