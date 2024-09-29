@@ -48,9 +48,9 @@ std::optional<std::pair<std::size_t, MultiplicationAlgorithm>> get_options(int a
     std::size_t side;
     std::string algo;
     desc.add_options()
-        ("help", "Produce help message")
-        ("side", po::value<std::size_t>(&side)->required(), "The size of both matrices' side")
-        ("algorithm", po::value<std::string>(&algo)->default_value("naive"),
+        ("help,h", "Produce help message")
+        ("side,s", po::value<std::size_t>(&side)->required(), "The size of both matrices' side")
+        ("algorithm,a", po::value<std::string>(&algo)->default_value("naive"),
          "Algorithm chosen for multiplication. Possible options:\n"
          "- naive: multiplication by definition\n"
          "- transpose-second: the same as \"naive\" but "
