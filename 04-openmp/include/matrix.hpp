@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <utility>
+#include <fstream>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -47,7 +48,7 @@ public:
           n_rows_{std::exchange(rhs.n_rows_, 0)},
           n_cols_{std::exchange(rhs.n_cols_, 0)} {}
 
-    Matrix &operator=(Matrix &&rhs) noexcept
+    Matrix &operator=(Matrix &&rhs) noexcept(std::is_nothrow_move_assignable_v<vector>)
     {
         vector::operator=(std::move(rhs));
         n_rows_ = rhs.n_rows_;
@@ -112,12 +113,30 @@ Matrix(std::size_t n_rows, std::size_t n_cols, It first, It last)
     -> Matrix<typename std::iterator_traits<It>::value_type>;
 
 template<typename T>
+void dump(std::ostream &os, const Matrix<T> &m)
+{
+    for (auto i = 0; i != m.n_rows(); ++i)
+    {
+        for (auto j = 0; j != m.n_cols(); ++j)
+            std::print(os, "{:7}", m[i, j]);
+        os << std::endl;
+    }
+}
+
+template<typename T>
+std::ostream &operator<<(std::ostream &os, const Matrix<T> &m)
+{
+    dump(os, m);
+    return os;
+}
+
+template<typename T>
 Matrix<T> naive_product(const Matrix<T> &lhs, const Matrix<T> &rhs)
 {
     using size_type = typename Matrix<T>::size_type;
 
     if (lhs.n_cols() != rhs.n_rows())
-        throw std::invalid_argument("Product of matrices of given sizes if undefined");
+        throw std::invalid_argument{"Product of matrices of given sizes if undefined"};
 
     Matrix<T> product{lhs.n_rows(), rhs.n_cols()};
     const size_type dim = lhs.n_cols();
@@ -144,7 +163,7 @@ Matrix<T> transpose_product(const Matrix<T> &lhs, Matrix<T> rhs)
     using size_type = typename Matrix<T>::size_type;
 
     if (lhs.n_cols() != rhs.n_rows())
-        throw std::invalid_argument("Product of matrices of given sizes if undefined");
+        throw std::invalid_argument{"Product of matrices of given sizes if undefined"};
 
     Matrix<T> product{lhs.n_rows(), rhs.n_cols()};
     const size_type dim = lhs.n_cols();
@@ -161,6 +180,69 @@ Matrix<T> transpose_product(const Matrix<T> &lhs, Matrix<T> rhs)
         {
             for (size_type k = 0; k != dim; ++k)
                 product[i, j] += lhs[i, k] * rhs[j, k];
+        }
+    }
+
+    return product;
+}
+
+// I'm aware of the fact that the following 3 lines make this code impossible to distribute as a
+// binary. Happily, it was never an intention. So, I did what I did because I could
+constexpr std::size_t kCLS =
+#include "/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size"
+;
+
+template<typename T>
+Matrix<T> drepper_product(const Matrix<T> &lhs, const Matrix<T> &rhs)
+{
+    using size_type = typename Matrix<T>::size_type;
+
+    if (lhs.n_cols() != rhs.n_rows())
+        throw std::invalid_argument{"Product of matrices of given sizes if undefined"};
+    if (!lhs.is_square() || !rhs.is_square())
+        throw std::invalid_argument{"Only square matrices are allowed"};
+
+    constexpr std::size_t kSM = kCLS / sizeof(T);
+    const size_type N = lhs.n_cols();
+
+    if (N % kSM)
+        throw std::invalid_argument{
+            "Only matrices which side is proportional to the cache line size are allowed"};
+
+    const size_type max_shift = kSM * N;
+
+    Matrix<T> product{N, N};
+
+    size_type i;
+    #pragma omp parallel for
+    for (i = 0; i < N; i += kSM)
+    {
+        size_type j;
+        #pragma omp parallel for
+        for (j = 0; j < N; j += kSM)
+        {
+            auto product_ptr = &product.at(i, j);
+
+            for (size_type k = 0; k < N; k += kSM)
+            {
+                auto lhs_ptr = &lhs.at(i, k);
+                auto rhs_ptr = &rhs.at(k, j);
+
+                for (size_type shift = 0; shift != max_shift; shift += N)
+                {
+                    auto res = product_ptr + shift;
+                    auto mul1 = lhs_ptr + shift;
+
+                    for (size_type k2 = 0; k2 != kSM; ++k2)
+                    {
+                        const auto mul1_elem = mul1[k2];
+                        auto mul2 = rhs_ptr + k2 * N;
+
+                        for (size_type j2 = 0; j2 != kSM; ++j2)
+                            res[j2] += mul1_elem * mul2[j2];
+                    }
+                }
+            }
         }
     }
 

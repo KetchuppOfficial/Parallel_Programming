@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <format>
+#include <type_traits>
 
 #include <boost/program_options.hpp>
 
@@ -19,10 +20,14 @@ std::pair<parallel::Matrix<T>, parallel::Matrix<T>> get_matrices(std::size_t siz
 {
     std::random_device rd;
     std::mt19937_64 gen{rd()};
-    std::uniform_real_distribution<double> elem{-1000.0, 1000.0};
+
+    using distribution_type = std::conditional_t<std::is_floating_point_v<T>,
+        std::uniform_real_distribution<T>, std::uniform_int_distribution<T>>;
+
+    distribution_type elem{T{-10}, T{10}};
     auto generator = [&](){ return elem(gen); };
 
-    std::vector<double> v(size * size);
+    std::vector<T> v(size * size);
 
     std::ranges::generate(v, generator);
     parallel::Matrix m_1(size, size, v.begin(), v.end());
@@ -36,7 +41,8 @@ std::pair<parallel::Matrix<T>, parallel::Matrix<T>> get_matrices(std::size_t siz
 enum class MultiplicationAlgorithm
 {
     naive,
-    transpose_second
+    transpose_second,
+    block
 };
 
 std::optional<std::pair<std::size_t, MultiplicationAlgorithm>> get_options(int argc, char **argv)
@@ -54,7 +60,8 @@ std::optional<std::pair<std::size_t, MultiplicationAlgorithm>> get_options(int a
          "Algorithm chosen for multiplication. Possible options:\n"
          "- naive: multiplication by definition\n"
          "- transpose-second: the same as \"naive\" but "
-         "transposes the second matrix before multiplication");
+         "transposes the second matrix before multiplication\n"
+         "- block: multiply matrix by blocks");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -71,6 +78,8 @@ std::optional<std::pair<std::size_t, MultiplicationAlgorithm>> get_options(int a
         return std::pair{side, MultiplicationAlgorithm::naive};
     else if (algo == "transpose-second")
         return std::pair{side, MultiplicationAlgorithm::transpose_second};
+    else if (algo == "block")
+        return std::pair{side, MultiplicationAlgorithm::block};
 
     throw std::invalid_argument{std::format("unknown multiplication algorithm \"{}\"", algo)};
 }
@@ -98,6 +107,11 @@ int main(int argc, char **argv) try
         case MultiplicationAlgorithm::transpose_second:
         {
             [[maybe_unused]] auto C = parallel::transpose_product(A, B);
+            break;
+        }
+        case MultiplicationAlgorithm::block:
+        {
+            [[maybe_unused]] auto C = parallel::drepper_product(A, B);
             break;
         }
         default:
