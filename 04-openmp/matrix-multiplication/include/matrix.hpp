@@ -192,6 +192,7 @@ constexpr std::size_t kCLS =
 #include "/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size"
 ;
 
+// Inspired by article "What Every Programmer Should Know About Memory" by Ulrich Drepper
 template<typename T>
 Matrix<T> drepper_product(const Matrix<T> &lhs, const Matrix<T> &rhs)
 {
