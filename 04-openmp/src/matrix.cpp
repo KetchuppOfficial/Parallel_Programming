@@ -127,11 +127,11 @@ int main(int argc, char **argv) try
 }
 catch (const std::exception &e)
 {
-    std::println(std::cerr, "Error: {}", e.what());
+    std::println(std::cerr, "Caught an instance of {}.\nwhat(): {}", typeid(e).name(), e.what());
     return 1;
 }
 catch (...)
 {
-    std::println(std::cerr, "Unknown exception.");
+    std::println(std::cerr, "Caught an unknown exception.");
     return 1;
 }
