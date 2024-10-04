@@ -222,12 +222,12 @@ Matrix<T> drepper_product(const Matrix<T> &lhs, const Matrix<T> &rhs)
         #pragma omp parallel for
         for (j = 0; j < N; j += kSM)
         {
-            auto product_ptr = &product.at(i, j);
+            auto product_ptr = &product[i, j];
 
             for (size_type k = 0; k < N; k += kSM)
             {
-                auto lhs_ptr = &lhs.at(i, k);
-                auto rhs_ptr = &rhs.at(k, j);
+                auto lhs_ptr = &lhs[i, k];
+                auto rhs_ptr = &rhs[k, j];
 
                 for (size_type shift = 0; shift != max_shift; shift += N)
                 {
