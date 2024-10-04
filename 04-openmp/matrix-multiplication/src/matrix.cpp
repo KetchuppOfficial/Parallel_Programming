@@ -119,9 +119,9 @@ int main(int argc, char **argv) try
     }
     auto finish = std::chrono::high_resolution_clock::now();
 
-    using ms = std::chrono::milliseconds;
-    std::println("Matrix multiplication took: {} ms",
-                 std::chrono::duration_cast<ms>(finish - start).count());
+    using mcs = std::chrono::microseconds;
+    std::println("Matrix multiplication took: {} mcs",
+                 std::chrono::duration_cast<mcs>(finish - start).count());
 
     return 0;
 }
