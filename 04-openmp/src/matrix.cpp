@@ -25,7 +25,7 @@ std::pair<parallel::Matrix<T>, parallel::Matrix<T>> get_matrices(std::size_t siz
         std::uniform_real_distribution<T>, std::uniform_int_distribution<T>>;
 
     distribution_type elem{T{-10}, T{10}};
-    auto generator = [&](){ return elem(gen); };
+    auto generator = [&]{ return elem(gen); };
 
     std::vector<T> v(size * size);
 
