@@ -101,17 +101,17 @@ int main(int argc, char **argv) try
     {
         case MultiplicationAlgorithm::naive:
         {
-            [[maybe_unused]] auto C = parallel::naive_product(A, B);
+            static_cast<void>(parallel::naive_product(A, B));
             break;
         }
         case MultiplicationAlgorithm::transpose_second:
         {
-            [[maybe_unused]] auto C = parallel::transpose_product(A, B);
+            static_cast<void>(parallel::transpose_product(A, B));
             break;
         }
         case MultiplicationAlgorithm::block:
         {
-            [[maybe_unused]] auto C = parallel::drepper_product(A, B);
+            static_cast<void>(parallel::drepper_product(A, B));
             break;
         }
         default:
