@@ -1,37 +1,23 @@
 #include <cstddef>
-#include <stdexcept>
 #include <string>
 #include <cmath>
-#include <fstream>
 #include <chrono>
 
 #include <fmt/base.h>
-#include <fmt/ranges.h>
-#include <fmt/ostream.h>
 
 #include <CLI/CLI.hpp>
 
+#include "common.hpp"
 #include "simple_matrix.hpp"
 
 namespace
 {
 
-auto init_a(std::size_t n_rows, std::size_t n_cols)
-{
-    parallel::SimpleMatrix a(n_rows, n_cols);
-
-    for (auto i = 0uz; i != n_rows; ++i)
-        for (auto j = 0uz; j != n_cols; ++j)
-            a[i, j] = 10 * i + j;
-
-    return a;
-}
-
 using ms = std::chrono::milliseconds;
 
 auto reference(std::size_t n_rows, std::size_t n_cols)
 {
-    auto a = init_a(n_rows, n_cols);
+    auto a = parallel::init_a(n_rows, n_cols);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -46,7 +32,7 @@ auto reference(std::size_t n_rows, std::size_t n_cols)
 
 auto task1(std::size_t n_rows, std::size_t n_cols)
 {
-    auto a = init_a(n_rows, n_cols);
+    auto a = parallel::init_a(n_rows, n_cols);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -61,7 +47,7 @@ auto task1(std::size_t n_rows, std::size_t n_cols)
 
 auto task2(std::size_t n_rows, std::size_t n_cols)
 {
-    auto a = init_a(n_rows, n_cols);
+    auto a = parallel::init_a(n_rows, n_cols);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -76,7 +62,7 @@ auto task2(std::size_t n_rows, std::size_t n_cols)
 
 auto task3(std::size_t n_rows, std::size_t n_cols)
 {
-    auto a = init_a(n_rows, n_cols);
+    auto a = parallel::init_a(n_rows, n_cols);
     auto b = parallel::SimpleMatrix(n_rows, n_cols);
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -92,16 +78,6 @@ auto task3(std::size_t n_rows, std::size_t n_cols)
     auto finish = std::chrono::high_resolution_clock::now();
 
     return std::pair{b, std::chrono::duration_cast<ms>(finish - start).count()};
-}
-
-void print_result(const std::string &out_name, const parallel::SimpleMatrix &m)
-{
-    std::ofstream out{out_name};
-    if (!out.is_open())
-        throw std::runtime_error{fmt::format("could not open file {}", out_name)};
-
-    for (auto i = 0uz; i != m.n_rows(); ++i)
-        fmt::println(out, "{}", fmt::join(&m[i, 0], &m[i + 1, 0], ", "));
 }
 
 } // unnamed namespace
@@ -148,7 +124,7 @@ int main(int argc, char **argv) try
         fmt::println("Loop execution took {} ms", time_result);
 
     if (!out_name.empty())
-        print_result(out_name, data);
+        parallel::print_result(out_name, data);
 
     return 0;
 }
