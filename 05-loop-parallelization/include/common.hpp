@@ -33,7 +33,7 @@ inline void print_result(const std::string &out_name, const parallel::SimpleMatr
         throw std::runtime_error{fmt::format("could not open file {}", out_name)};
 
     for (auto i = 0uz; i != m.n_rows(); ++i)
-        fmt::println(out, "{}", fmt::join(&m[i, 0], &m[i + 1, 0], ", "));
+        fmt::println(out, "{:.2f}", fmt::join(&m[i, 0], &m[i + 1, 0], ", "));
 }
 
 } // namespace parallel
