@@ -24,3 +24,7 @@ target_link_libraries(sequential PRIVATE
     fmt::fmt
     CLI11::CLI11
 )
+
+target_include_directories(sequential PRIVATE
+    ./include
+)
