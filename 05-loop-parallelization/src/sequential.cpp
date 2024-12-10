@@ -87,8 +87,7 @@ int main(int argc, char **argv) try
     CLI::App app{"Application for studying loop parallelization"};
 
     std::string out_name;
-    app.add_option("-o,--output", out_name, "Path to a .txt file with results")
-        ->check(CLI::ExistingFile);
+    app.add_option("-o,--output", out_name, "Path to a .txt file with results");
 
     bool time = false;
     app.add_flag("-t,--time", time, "Measure studied loop execution time");
