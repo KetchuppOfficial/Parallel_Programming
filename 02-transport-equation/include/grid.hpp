@@ -3,7 +3,6 @@
 
 #include <cstddef>
 #include <vector>
-#include <algorithm>
 
 namespace parallel
 {
