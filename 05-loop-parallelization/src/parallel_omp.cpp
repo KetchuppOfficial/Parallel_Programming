@@ -143,7 +143,7 @@ auto task3(std::size_t n_rows, std::size_t n_cols)
 
 int main(int argc, char **argv) try
 {
-    CLI::App app{"Parallel application for studying loop parallelization"};
+    CLI::App app{"Parallel application for studying loop parallelization with OpenMP"};
 
     std::string out_name;
     app.add_option("-o,--output", out_name, "Path to a .txt file with results");
