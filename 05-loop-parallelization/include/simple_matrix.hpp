@@ -34,6 +34,9 @@ public:
 
     std::size_t size() const noexcept { return data_.size(); }
 
+    std::vector<double> &buffer() noexcept { return data_; }
+    const std::vector<double> &buffer() const noexcept { return data_; }
+
 private:
 
     std::vector<double> data_;

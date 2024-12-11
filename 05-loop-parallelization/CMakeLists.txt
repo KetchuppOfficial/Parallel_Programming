@@ -10,6 +10,8 @@ endif()
 find_package(fmt REQUIRED)
 find_package(CLI11 REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(Boost REQUIRED
+             COMPONENTS MPI)
 
 add_executable(sequential
     ./src/sequential.cpp
@@ -30,6 +32,7 @@ target_include_directories(sequential PRIVATE
     ./include
 )
 
+
 add_executable(parallel_omp
     ./src/parallel_omp.cpp
 )
@@ -47,5 +50,26 @@ target_link_libraries(parallel_omp PRIVATE
 )
 
 target_include_directories(parallel_omp PRIVATE
+    ./include
+)
+
+
+add_executable(parallel_mpi
+    ./src/parallel_mpi.cpp
+)
+
+set_target_properties(parallel_mpi PROPERTIES
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
+
+target_link_libraries(parallel_mpi PRIVATE
+    fmt::fmt
+    CLI11::CLI11
+    Boost::mpi
+)
+
+target_include_directories(parallel_mpi PRIVATE
     ./include
 )
